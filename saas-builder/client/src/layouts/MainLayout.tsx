@@ -1,26 +1,26 @@
 import Sidebar from "../components/Sidebar";
 import ChatMessages from "../components/ChatMessages";
 import ChatInput from "../components/ChatInput";
+import type { Message } from "../../../shared/types/message";
 
 type Props = {
-  messages: {
-    role: string;
-    content: string;
-  }[];
+ messages: Message[];
 
-  setMessages: React.Dispatch<
-    React.SetStateAction<
-      {
-        role: string;
-        content: string;
-      }[]
-    >
-  >;
+setMessages: React.Dispatch<
+  React.SetStateAction<Message[]>
+>;
+  isLoading: boolean;
+
+setIsLoading: React.Dispatch<
+  React.SetStateAction<boolean>
+>;
 };
 
 function MainLayout({
   messages,
   setMessages,
+  isLoading,
+  setIsLoading,
 }: Props) {
   return (
     <div className="h-screen bg-slate-950 text-white flex">
@@ -38,11 +38,16 @@ function MainLayout({
           </p>
         </div>
         
-        <ChatMessages messages={messages} />
+        <ChatMessages
+  messages={messages}
+  isLoading={isLoading}
+/>
 
         <ChatInput
-          setMessages={setMessages}
-        />
+  setMessages={setMessages}
+  setIsLoading={setIsLoading}
+  isLoading={isLoading}
+/>
 
       </div>
     </div>

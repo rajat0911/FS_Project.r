@@ -1,4 +1,11 @@
+import { resetChat } from "../services/chat.service";
+
 function Sidebar() {
+  const handleNewChat = async () => {
+  await resetChat();
+
+  window.location.reload();
+};
   return (
     <div className="w-72 border-r border-slate-800 p-4 flex flex-col">
       
@@ -8,7 +15,9 @@ function Sidebar() {
             </p>
       </div>
 
-      <button className="bg-white text-black rounded-lg px-4 py-3 font-medium hover:bg-slate-200 transition">
+      <button 
+      onClick={handleNewChat}
+      className="bg-white text-black rounded-lg px-4 py-3 font-medium hover:bg-slate-200 transition">
         + New Chat
       </button>
 

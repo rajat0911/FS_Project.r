@@ -14,3 +14,8 @@ export async function sendMessage(message: string) {
 
   return data;
 }
+export async function resetChat() {
+  await fetch("/chat/reset", {
+    method: "POST",
+  });
+}
