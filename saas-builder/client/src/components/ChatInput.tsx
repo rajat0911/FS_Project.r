@@ -1,6 +1,13 @@
 import { useState } from "react";
-import { sendMessage } from "../services/chat.service";
-import type { Message } from "../../../shared/types/message";
+
+import { sendMessage }
+from "../services/chat.service";
+
+import type { Message }
+from "../../../shared/types/message";
+
+import { saveMessage }
+from "../services/message.service";
 
 type Props = {
   setMessages: React.Dispatch<
@@ -12,38 +19,94 @@ type Props = {
   setIsLoading: React.Dispatch<
     React.SetStateAction<boolean>
   >;
+
+  chatId: string;
 };
 
-function ChatInput({ setMessages, isLoading, setIsLoading }: Props) {
-  const [input, setInput] = useState("");
+function ChatInput({
+  setMessages,
+  isLoading,
+  setIsLoading,
+  chatId,
+}: Props) {
 
-  const handleSendMessage = async () => {
+  const [input, setInput] =
+    useState("");
+
+  const handleSendMessage =
+    async () => {
+
     if (!input.trim()) return;
 
     const userMessage = input;
+
+    const currentTime =
+      new Date().toLocaleTimeString(
+        [],
+        {
+          hour: "2-digit",
+          minute: "2-digit",
+        }
+      );
 
     setMessages((prev) => [
       ...prev,
       {
         role: "user",
         content: userMessage,
+        timestamp: currentTime,
       },
     ]);
 
     setInput("");
+
     setIsLoading(true);
+
     try {
-      const data = await sendMessage(userMessage);
+
+      await saveMessage({
+        chat_id: chatId,
+
+        role: "user",
+
+        content: userMessage,
+
+        timestamp: currentTime,
+      });
+
+      const data =
+        await sendMessage(userMessage);
+
+      const assistantTime =
+        new Date().toLocaleTimeString(
+          [],
+          {
+            hour: "2-digit",
+            minute: "2-digit",
+          }
+        );
 
       setMessages((prev) => [
         ...prev,
         {
           role: "assistant",
           content: data.reply,
+          timestamp: assistantTime,
         },
       ]);
-      setIsLoading(false);
+
+      await saveMessage({
+        chat_id: chatId,
+
+        role: "assistant",
+
+        content: data.reply,
+
+        timestamp: assistantTime,
+      });
+
     } catch (error) {
+
       console.error(error);
 
       setMessages((prev) => [
@@ -51,9 +114,20 @@ function ChatInput({ setMessages, isLoading, setIsLoading }: Props) {
         {
           role: "assistant",
           content:
-            "⚠️ AI service is temporarily unavailable. Please try again later.",
+            "⚠️ AI service is temporarily unavailable.",
+
+          timestamp:
+            new Date().toLocaleTimeString(
+              [],
+              {
+                hour: "2-digit",
+                minute: "2-digit",
+              }
+            ),
         },
       ]);
+
+    } finally {
 
       setIsLoading(false);
     }
@@ -66,25 +140,41 @@ function ChatInput({ setMessages, isLoading, setIsLoading }: Props) {
 
         <input
           type="text"
+
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+
+          onChange={(e) =>
+            setInput(e.target.value)
+          }
+
           onKeyDown={(e) => {
-            if (e.key === "Enter") {
+            if (
+              e.key === "Enter" &&
+              !isLoading
+            ) {
               handleSendMessage();
             }
           }}
+
           placeholder="Describe your SaaS idea..."
+
           autoFocus
+
           className="flex-1 bg-slate-900 border border-slate-700 rounded-2xl px-4 py-4 outline-none focus:border-slate-500"
         />
 
         <button
-          disabled={!input.trim() || isLoading}
+          disabled={
+            !input.trim() || isLoading
+          }
+
           onClick={handleSendMessage}
-          className="bg-white text-black disabled:opacity-50 disabled:cursor-not-allowed
-                     px-6 rounded-2xl font-medium hover:bg-slate-200 transition"
+
+          className="bg-white text-black disabled:opacity-50 disabled:cursor-not-allowed px-6 rounded-2xl font-medium hover:bg-slate-200 transition"
         >
-          Send
+          {isLoading
+            ? "Thinking..."
+            : "Send"}
         </button>
 
       </div>

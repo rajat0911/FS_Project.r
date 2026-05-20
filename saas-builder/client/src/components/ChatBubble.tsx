@@ -10,20 +10,26 @@ function ChatBubble({ message }: Props) {
 
     return (
         <div
-            className={`flex ${isUser
-                    ? "justify-end"
-                    : "justify-start"
+            className={`flex animate-fade-in ${isUser
+                ? "justify-end"
+                : "justify-start"
                 }`}
         >
             <div
                 className={`max-w-3xl px-5 py-4 rounded-2xl ${isUser
-                        ? "bg-white text-black"
-                        : "bg-slate-800 text-white"
+                    ? "bg-white text-black"
+                    : "bg-slate-800 text-white"
                     }`}
             >
-                <p className="text-sm mb-2 opacity-70">
-                    {isUser ? "You" : "AI Consultant"}
-                </p>
+                <div className="flex items-center justify-between gap-4 mb-3">
+                    <p className="text-sm opacity-70">
+                        {isUser ? "You" : "AI Consultant"}
+                    </p>
+
+                    <span className="text-xs text-slate-400 whitespace-nowrap">
+                        {message.timestamp}
+                    </span>
+                </div>
 
                 <div className="prose prose-invert max-w-none">
                     <ReactMarkdown>

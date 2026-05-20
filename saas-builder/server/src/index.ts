@@ -1,8 +1,12 @@
 import dotenv from "dotenv";
-
 dotenv.config();
+import sessionRoutes
+from "./routes/session.routes";
+import { supabase } from "./config/supabase";
 import express from "express";
 import cors from "cors";
+import messageRoutes
+from "./routes/message.routes";
 
 import chatRoutes from "./routes/chat.routes";
 
@@ -16,8 +20,29 @@ app.get("/", (req, res) => {
 });
 
 app.use("/chat", chatRoutes);
+app.use("/session", sessionRoutes);
+app.use("/message", messageRoutes);
 
 const PORT = 3000;
+
+supabase
+  .from("chats")
+  .select("*")
+  .then(({ data, error }) => {
+
+    if (error) {
+      console.log(
+        "Supabase Error:",
+        error.message
+      );
+    } else {
+      console.log(
+        "Supabase Connected ✅"
+      );
+
+      console.log(data);
+    }
+  });
 
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);

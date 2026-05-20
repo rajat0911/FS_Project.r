@@ -14,6 +14,7 @@ setMessages: React.Dispatch<
 setIsLoading: React.Dispatch<
   React.SetStateAction<boolean>
 >;
+chatId: string;
 };
 
 function MainLayout({
@@ -21,6 +22,7 @@ function MainLayout({
   setMessages,
   isLoading,
   setIsLoading,
+  chatId,
 }: Props) {
   return (
     <div className="h-screen bg-slate-950 text-white flex">
@@ -47,6 +49,7 @@ function MainLayout({
   setMessages={setMessages}
   setIsLoading={setIsLoading}
   isLoading={isLoading}
+  chatId={chatId}
 />
 
       </div>
