@@ -1,12 +1,19 @@
 const questions = [
-      "What problem does your SaaS solve?",
-      "Who is your target audience?",
-      "Will your platform include AI features?",
-      "How do you plan to monetize the platform?",
-      "Do you already have competitors in mind?",
-      "What is your main differentiator?",
-      "Will this be web-only or mobile too?",
-      "Do you plan to build an MVP first?"
+
+  "What problem does your SaaS solve?",
+
+  "Who are your target users or customers?",
+
+  "How are users currently solving this problem?",
+
+  "What makes your solution unique from competitors?",
+
+  "What core features should the MVP include?",
+
+  "How do you plan to monetize this SaaS?",
+
+  "Which platforms should the product support? (Web, Mobile, Both)",
+
 ];
-                    
+
 export default questions;

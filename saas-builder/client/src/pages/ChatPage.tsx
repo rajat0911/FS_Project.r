@@ -7,16 +7,16 @@ import MainLayout from "../layouts/MainLayout";
 function ChatPage() {
 
   const defaultMessage: Message[] = [
-    
+
     {
       role: "assistant",
       content:
-        "Hello! Tell me about your SaaS idea and what problem you want to solve.",
+        "Hi! I'm your AI SaaS consultant 🚀\nHow can I help you today?",
     },
   ];
-const [chatId] = useState(
-  crypto.randomUUID()
-);
+  const [chatId] = useState(
+    crypto.randomUUID()
+  );
   const [messages, setMessages] =
     useState<Message[]>(defaultMessage);
 
@@ -42,12 +42,12 @@ const [chatId] = useState(
 
   return (
     <MainLayout
-  messages={messages}
-  setMessages={setMessages}
-  isLoading={isLoading}
-  setIsLoading={setIsLoading}
-  chatId={chatId}
-/>
+      messages={messages}
+      setMessages={setMessages}
+      isLoading={isLoading}
+      setIsLoading={setIsLoading}
+      chatId={chatId}
+    />
   );
 }
 

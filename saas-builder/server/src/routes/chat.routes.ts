@@ -1,88 +1,155 @@
 import { Router } from "express";
-import { GoogleGenAI } from "@google/genai";
-import generateSummary from "../utils/generateSummary";
+
+import { GoogleGenAI }
+from "@google/genai";
+
+import questions
+from "../data/questions";
+
+import REPORT_PROMPT
+from "../prompts/reportPrompt";
+
 const router = Router();
 
 const ai = new GoogleGenAI({
-  apiKey: process.env.GEMINI_API_KEY!,
+  apiKey:
+    process.env.GEMINI_API_KEY!,
 });
 
-import SYSTEM_PROMPT from "../prompts/systemPrompt";
-
-const conversationHistory: {
-  role: "user" | "model";
-  parts: { text: string }[];
-}[] = [];
-
-import questions from "../data/questions";
-
 let currentQuestionIndex = 0;
+
 const userAnswers: string[] = [];
+
+// NEW
+let interviewStarted = false;
+
 function resetConversation() {
-  conversationHistory.length = 0;
 
   userAnswers.length = 0;
 
   currentQuestionIndex = 0;
+
+  interviewStarted = false;
 }
-router.post("/", async (req, res) => {
-  try {
-    const { message } = req.body;
-    userAnswers.push(message);
-    conversationHistory.push({
-      role: "user",
-      parts: [{ text: message }],
-    });
-    const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: [
-        {
-          role: "user",
-          parts: [{ text: SYSTEM_PROMPT }],
-        },
-        ...conversationHistory,
-      ],
-    });
-    let aiReply =
-      response.text ||
-      "AI service is temporarily unavailable.";
 
-    if (
-      currentQuestionIndex < questions.length
-    ) {
-      aiReply += `\n\n${questions[currentQuestionIndex]}`;
+router.post(
+  "/",
+  async (req, res) => {
 
-      currentQuestionIndex++;
-    } else {
-      aiReply += generateSummary(userAnswers);
+    try {
+
+      const { message } =
+        req.body;
+
+      console.log(
+        "User Message:"
+      );
+
+      console.log(message);
+
+      // FIRST MESSAGE FLOW
+      if (!interviewStarted) {
+
+        interviewStarted = true;
+
+        return res.json({
+          reply:
+            `That's great to hear 🚀\n\n${questions[0]}`,
+        });
+      }
+
+      // STORE ANSWERS
+      userAnswers.push(message);
+
+      // ASK NEXT QUESTION
+      if (
+        currentQuestionIndex <
+        questions.length - 1
+      ) {
+
+        currentQuestionIndex++;
+
+        return res.json({
+          reply:
+            questions[
+              currentQuestionIndex
+            ],
+        });
+      }
+
+      // GENERATE FINAL REPORT
+      const formattedAnswers =
+        userAnswers
+          .map(
+            (
+              answer,
+              index
+            ) => `
+${questions[index]}:
+${answer}
+`
+          )
+          .join("\n");
+
+      console.log(
+        "Generating SaaS Report..."
+      );
+
+      const response =
+        await ai.models.generateContent({
+
+          model:
+            "gemini-2.5-flash",
+
+          contents: `
+${REPORT_PROMPT}
+
+USER ANSWERS:
+
+${formattedAnswers}
+          `,
+        });
+
+      const report =
+        response.text ||
+        "Failed to generate report.";
+
+      console.log(
+        "REPORT GENERATED ✅"
+      );
+
+      resetConversation();
+
+      return res.json({
+        reply: report,
+      });
+
+    } catch (error: any) {
+
+      console.log(
+        "FULL ERROR:"
+      );
+
+      console.log(error);
+
+      return res.status(500).json({
+        reply:
+          "Failed to generate SaaS report.",
+      });
     }
+  }
+);
 
-    conversationHistory.push({
-      role: "model",
-      parts: [{ text: aiReply }],
-    });
-    await new Promise((resolve) =>
-      setTimeout(resolve, 1500)
-    );
+router.post(
+  "/reset",
+  (req, res) => {
+
+    resetConversation();
+
     return res.json({
-      reply: aiReply,
-    });
-
-  } catch (error) {
-    console.error(error);
-
-    return res.status(500).json({
-      reply:
-        "AI service is temporarily unavailable. Please check API quota or billing.",
+      success: true,
     });
   }
-});
-router.post("/reset", (req, res) => {
-  resetConversation();
-
-  return res.json({
-    success: true,
-  });
-});
+);
 
 export default router;

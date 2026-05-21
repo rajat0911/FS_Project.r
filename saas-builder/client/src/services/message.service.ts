@@ -8,7 +8,7 @@ export async function saveMessage(
 ) {
 
   const response = await fetch(
-    `${import.meta.env.VITE_API_URL}/message/save`,
+    "/message/save",
     {
       method: "POST",
 
@@ -23,5 +23,12 @@ export async function saveMessage(
     }
   );
 
-  return response.json();
+  if (!response.ok) {
+
+    throw new Error(
+      "Failed to save message"
+    );
+  }
+
+  return await response.json();
 }
