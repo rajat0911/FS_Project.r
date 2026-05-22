@@ -1,7 +1,17 @@
-export type Message = {
-  role: "user" | "assistant";
+import type {
+  EvaluationReport
+}
+from "./evaluation";
 
-  content: string;
+export type Message = {
+
+  role:
+    | "user"
+    | "assistant";
+
+  content:
+    | string
+    | EvaluationReport;
 
   timestamp?: string;
 };

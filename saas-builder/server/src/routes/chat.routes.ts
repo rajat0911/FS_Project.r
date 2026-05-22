@@ -3,11 +3,11 @@ import { Router } from "express";
 import { GoogleGenAI }
 from "@google/genai";
 
-import questions
-from "../data/questions";
+import metrics
+from "../data/metrics";
 
-import REPORT_PROMPT
-from "../prompts/reportPrompt";
+import EVALUATION_PROMPT
+from "../prompts/evaluationPrompt";
 
 const router = Router();
 
@@ -18,18 +18,29 @@ const ai = new GoogleGenAI({
 
 let currentQuestionIndex = 0;
 
-const userAnswers: string[] = [];
-
-// NEW
 let interviewStarted = false;
 
-function resetConversation() {
+let startupMetrics = {
+  idea: "",
+  launch_country: "",
+  founder_country: "",
+  target_age_group: "",
+  tech_stack: "",
+};
 
-  userAnswers.length = 0;
+function resetConversation() {
 
   currentQuestionIndex = 0;
 
   interviewStarted = false;
+
+  startupMetrics = {
+    idea: "",
+    launch_country: "",
+    founder_country: "",
+    target_age_group: "",
+    tech_stack: "",
+  };
 }
 
 router.post(
@@ -47,54 +58,73 @@ router.post(
 
       console.log(message);
 
-      // FIRST MESSAGE FLOW
+      // FIRST MESSAGE
       if (!interviewStarted) {
 
         interviewStarted = true;
 
         return res.json({
           reply:
-            `That's great to hear 🚀\n\n${questions[0]}`,
+            `That's great to hear 🚀\n\n${metrics[0]}`,
         });
       }
 
       // STORE ANSWERS
-      userAnswers.push(message);
+      switch (
+        currentQuestionIndex
+      ) {
+
+        case 0:
+          startupMetrics.idea =
+            message;
+          break;
+
+        case 1:
+          startupMetrics.launch_country =
+            message;
+          break;
+
+        case 2:
+          startupMetrics.founder_country =
+            message;
+          break;
+
+        case 3:
+          startupMetrics.target_age_group =
+            message;
+          break;
+
+        case 4:
+          startupMetrics.tech_stack =
+            message;
+          break;
+      }
 
       // ASK NEXT QUESTION
       if (
         currentQuestionIndex <
-        questions.length - 1
+        metrics.length - 1
       ) {
 
         currentQuestionIndex++;
 
         return res.json({
           reply:
-            questions[
+            metrics[
               currentQuestionIndex
             ],
         });
       }
 
-      // GENERATE FINAL REPORT
-      const formattedAnswers =
-        userAnswers
-          .map(
-            (
-              answer,
-              index
-            ) => `
-${questions[index]}:
-${answer}
-`
-          )
-          .join("\n");
-
       console.log(
-        "Generating SaaS Report..."
+        "STARTUP METRICS:"
       );
 
+      console.log(
+        startupMetrics
+      );
+
+      // FINAL AI EVALUATION
       const response =
         await ai.models.generateContent({
 
@@ -102,26 +132,79 @@ ${answer}
             "gemini-2.5-flash",
 
           contents: `
-${REPORT_PROMPT}
+${EVALUATION_PROMPT}
 
-USER ANSWERS:
+Analyze this startup:
 
-${formattedAnswers}
+${JSON.stringify(
+  startupMetrics,
+  null,
+  2
+)}
           `,
         });
 
-      const report =
-        response.text ||
-        "Failed to generate report.";
+      const rawText =
+        response.text || "{}";
 
       console.log(
-        "REPORT GENERATED ✅"
+        "RAW AI RESPONSE:"
+      );
+
+      console.log(rawText);
+
+      // CLEAN JSON
+      const cleanedText =
+        rawText
+          .replace(
+            /```json/g,
+            ""
+          )
+          .replace(
+            /```/g,
+            ""
+          )
+          .trim();
+
+      let parsedData;
+
+      try {
+
+        parsedData =
+          JSON.parse(
+            cleanedText
+          );
+
+      } catch (
+        parseError
+      ) {
+
+        console.log(
+          "JSON PARSE ERROR:"
+        );
+
+        console.log(
+          parseError
+        );
+
+        return res.status(500).json({
+          reply:
+            "Failed to parse AI evaluation.",
+        });
+      }
+
+      console.log(
+        "PARSED JSON:"
+      );
+
+      console.log(
+        parsedData
       );
 
       resetConversation();
 
       return res.json({
-        reply: report,
+        reply: parsedData,
       });
 
     } catch (error: any) {
@@ -134,7 +217,7 @@ ${formattedAnswers}
 
       return res.status(500).json({
         reply:
-          "Failed to generate SaaS report.",
+          "Failed to generate SaaS evaluation.",
       });
     }
   }
