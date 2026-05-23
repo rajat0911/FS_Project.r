@@ -1,13 +1,13 @@
 import { Router } from "express";
 
 import { GoogleGenAI }
-from "@google/genai";
+  from "@google/genai";
 
 import metrics
-from "../data/metrics";
+  from "../data/metrics";
 
 import EVALUATION_PROMPT
-from "../prompts/evaluationPrompt";
+  from "../prompts/evaluationPrompt";
 
 const router = Router();
 
@@ -16,17 +16,39 @@ const ai = new GoogleGenAI({
     process.env.GEMINI_API_KEY!,
 });
 
+/* -------------------------------- */
+/* METRIC STATE */
+/* -------------------------------- */
+
 let currentQuestionIndex = 0;
 
 let interviewStarted = false;
 
-let startupMetrics = {
+const metricKeys = [
+  "idea",
+  "launch_country",
+  "founder_country",
+  "target_age_group",
+  "tech_stack",
+] as const;
+
+let startupMetrics:
+  Record<string, string> = {
+
   idea: "",
+
   launch_country: "",
+
   founder_country: "",
+
   target_age_group: "",
+
   tech_stack: "",
 };
+
+/* -------------------------------- */
+/* RESET */
+/* -------------------------------- */
 
 function resetConversation() {
 
@@ -35,13 +57,22 @@ function resetConversation() {
   interviewStarted = false;
 
   startupMetrics = {
+
     idea: "",
+
     launch_country: "",
+
     founder_country: "",
+
     target_age_group: "",
+
     tech_stack: "",
   };
 }
+
+/* -------------------------------- */
+/* CHAT ROUTE */
+/* -------------------------------- */
 
 router.post(
   "/",
@@ -58,49 +89,56 @@ router.post(
 
       console.log(message);
 
-      // FIRST MESSAGE
+      /* ---------------------------- */
+      /* FIRST MESSAGE */
+      /* ---------------------------- */
+
       if (!interviewStarted) {
 
         interviewStarted = true;
 
         return res.json({
           reply:
-            `That's great to hear 🚀\n\n${metrics[0]}`,
+            `Hi! I'm your AI SaaS Consultant 🚀
+
+I will analyze your startup idea,
+evaluate its market potential,
+technical feasibility,
+competition level,
+scalability,
+and business growth opportunities.
+
+Let's begin 👇
+
+${metrics[0]}`
         });
       }
 
-      // STORE ANSWERS
-      switch (
+      /* ---------------------------- */
+      /* STORE USER ANSWER */
+      /* ---------------------------- */
+
+      const currentKey =
+        metricKeys[
         currentQuestionIndex
-      ) {
+        ];
 
-        case 0:
-          startupMetrics.idea =
-            message;
-          break;
+      startupMetrics[
+        currentKey
+      ] = message;
 
-        case 1:
-          startupMetrics.launch_country =
-            message;
-          break;
+      console.log(
+        "UPDATED METRICS:"
+      );
 
-        case 2:
-          startupMetrics.founder_country =
-            message;
-          break;
+      console.log(
+        startupMetrics
+      );
 
-        case 3:
-          startupMetrics.target_age_group =
-            message;
-          break;
+      /* ---------------------------- */
+      /* ASK NEXT QUESTION */
+      /* ---------------------------- */
 
-        case 4:
-          startupMetrics.tech_stack =
-            message;
-          break;
-      }
-
-      // ASK NEXT QUESTION
       if (
         currentQuestionIndex <
         metrics.length - 1
@@ -111,20 +149,19 @@ router.post(
         return res.json({
           reply:
             metrics[
-              currentQuestionIndex
+            currentQuestionIndex
             ],
         });
       }
 
-      console.log(
-        "STARTUP METRICS:"
-      );
+      /* ---------------------------- */
+      /* FINAL AI EVALUATION */
+      /* ---------------------------- */
 
       console.log(
-        startupMetrics
+        "GENERATING AI EVALUATION..."
       );
 
-      // FINAL AI EVALUATION
       const response =
         await ai.models.generateContent({
 
@@ -134,13 +171,15 @@ router.post(
           contents: `
 ${EVALUATION_PROMPT}
 
-Analyze this startup:
+Analyze this SaaS startup deeply.
+
+STARTUP METRICS:
 
 ${JSON.stringify(
-  startupMetrics,
-  null,
-  2
-)}
+            startupMetrics,
+            null,
+            2
+          )}
           `,
         });
 
@@ -153,7 +192,10 @@ ${JSON.stringify(
 
       console.log(rawText);
 
-      // CLEAN JSON
+      /* ---------------------------- */
+      /* CLEAN RESPONSE */
+      /* ---------------------------- */
+
       const cleanedText =
         rawText
           .replace(
@@ -164,7 +206,23 @@ ${JSON.stringify(
             /```/g,
             ""
           )
+          .replace(
+            /\n/g,
+            ""
+          )
           .trim();
+
+      console.log(
+        "CLEANED RESPONSE:"
+      );
+
+      console.log(
+        cleanedText
+      );
+
+      /* ---------------------------- */
+      /* PARSE JSON */
+      /* ---------------------------- */
 
       let parsedData;
 
@@ -174,10 +232,21 @@ ${JSON.stringify(
           JSON.parse(
             cleanedText
           );
+        console.log("PARSED DATA TYPE:");
+        console.log(typeof parsedData);
+
+        console.log("PARSED DATA:");
+        console.log(parsedData);
 
       } catch (
-        parseError
+      parseError
       ) {
+
+        console.log(
+          "TYPE OF PARSED DATA:"
+        );
+
+        console.log(typeof parsedData);
 
         console.log(
           "JSON PARSE ERROR:"
@@ -189,7 +258,7 @@ ${JSON.stringify(
 
         return res.status(500).json({
           reply:
-            "Failed to parse AI evaluation.",
+            "Failed to parse AI evaluation JSON.",
         });
       }
 
@@ -201,10 +270,20 @@ ${JSON.stringify(
         parsedData
       );
 
+      /* ---------------------------- */
+      /* RESET SESSION */
+      /* ---------------------------- */
+
       resetConversation();
 
+      /* ---------------------------- */
+      /* RETURN RESPONSE */
+      /* ---------------------------- */
+
       return res.json({
-        reply: parsedData,
+        reply: {
+          ...parsedData
+        },
       });
 
     } catch (error: any) {
@@ -222,6 +301,10 @@ ${JSON.stringify(
     }
   }
 );
+
+/* -------------------------------- */
+/* RESET ROUTE */
+/* -------------------------------- */
 
 router.post(
   "/reset",

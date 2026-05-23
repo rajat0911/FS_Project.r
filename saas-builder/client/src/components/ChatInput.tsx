@@ -1,13 +1,13 @@
 import { useState } from "react";
 
 import { sendMessage }
-from "../services/chat.service";
+  from "../services/chat.service";
 
 import type { Message }
-from "../../../shared/types/message";
+  from "../../../shared/types/message";
 
 import { saveMessage }
-from "../services/message.service";
+  from "../services/message.service";
 
 type Props = {
   setMessages: React.Dispatch<
@@ -36,48 +36,11 @@ function ChatInput({
   const handleSendMessage =
     async () => {
 
-    if (!input.trim()) return;
+      if (!input.trim()) return;
 
-    const userMessage = input;
+      const userMessage = input;
 
-    const currentTime =
-      new Date().toLocaleTimeString(
-        [],
-        {
-          hour: "2-digit",
-          minute: "2-digit",
-        }
-      );
-
-    setMessages((prev) => [
-      ...prev,
-      {
-        role: "user",
-        content: userMessage,
-        timestamp: currentTime,
-      },
-    ]);
-
-    setInput("");
-
-    setIsLoading(true);
-
-    try {
-
-      await saveMessage({
-        chat_id: chatId,
-
-        role: "user",
-
-        content: userMessage,
-
-        timestamp: currentTime,
-      });
-
-      const data =
-        await sendMessage(userMessage);
-
-      const assistantTime =
+      const currentTime =
         new Date().toLocaleTimeString(
           [],
           {
@@ -89,49 +52,100 @@ function ChatInput({
       setMessages((prev) => [
         ...prev,
         {
+          role: "user",
+          content: userMessage,
+          timestamp: currentTime,
+        },
+      ]);
+
+      setInput("");
+
+      setIsLoading(true);
+
+      try {
+
+        await saveMessage({
+          chat_id: chatId,
+
+          role: "user",
+
+          content: userMessage,
+
+          timestamp: currentTime,
+        });
+
+        const data =
+          await sendMessage(userMessage);
+        console.log("FRONTEND DATA:");
+        console.log(data);
+
+        console.log("REPLY TYPE:");
+        console.log(typeof data.reply);
+
+        console.log("REPLY:");
+        console.log(data.reply);
+
+        console.log(data.reply);
+
+        console.log(
+          typeof data.reply
+        );
+
+        const assistantTime =
+          new Date().toLocaleTimeString(
+            [],
+            {
+              hour: "2-digit",
+              minute: "2-digit",
+            }
+          );
+
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: data.reply,
+            timestamp: assistantTime,
+          },
+        ]);
+
+        await saveMessage({
+          chat_id: chatId,
+
           role: "assistant",
+
           content: data.reply,
+
           timestamp: assistantTime,
-        },
-      ]);
+        });
 
-      await saveMessage({
-        chat_id: chatId,
+      } catch (error) {
 
-        role: "assistant",
+        console.error(error);
 
-        content: data.reply,
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content:
+              "⚠️ AI service is temporarily unavailable.",
 
-        timestamp: assistantTime,
-      });
+            timestamp:
+              new Date().toLocaleTimeString(
+                [],
+                {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }
+              ),
+          },
+        ]);
 
-    } catch (error) {
+      } finally {
 
-      console.error(error);
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content:
-            "⚠️ AI service is temporarily unavailable.",
-
-          timestamp:
-            new Date().toLocaleTimeString(
-              [],
-              {
-                hour: "2-digit",
-                minute: "2-digit",
-              }
-            ),
-        },
-      ]);
-
-    } finally {
-
-      setIsLoading(false);
-    }
-  };
+        setIsLoading(false);
+      }
+    };
 
   return (
     <div className="border-t border-slate-800 px-6 py-5 bg-slate-950">

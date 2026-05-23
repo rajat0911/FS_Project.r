@@ -1,115 +1,155 @@
-import { resetChat } from "../services/chat.service";
+import { resetChat }
+from "../services/chat.service";
+
 import jsPDF from "jspdf";
 
-const exportChat = () => {
+import html2canvas
+from "html2canvas";
 
-  const savedMessages =
-    localStorage.getItem("saas-chat");
+const exportReport =
+  async () => {
 
-  if (!savedMessages) {
-    alert("No chat found.");
+  const report =
+    document.getElementById(
+      "saas-report-dashboard"
+    );
+
+  if (!report) {
+
+    alert(
+      "No SaaS report found."
+    );
+
     return;
   }
 
-  const messages =
-    JSON.parse(savedMessages);
+  try {
 
-  const doc = new jsPDF();
+    const canvas =
+      await html2canvas(
+        report,
+        {
+          scale: 2,
+          useCORS: true,
+          backgroundColor:
+            "#020617",
+        }
+      );
 
-  let y = 20;
+    const imgData =
+      canvas.toDataURL(
+        "image/png"
+      );
 
-  doc.setFontSize(18);
+    const pdf =
+      new jsPDF({
+        orientation:
+          "portrait",
 
-  doc.text(
-    "AI SaaS Consultation Report",
-    20,
-    y
-  );
+        unit: "px",
 
-  y += 20;
+        format: "a4",
+      });
 
-  messages.forEach(
-    (
-      message: {
-        role: string;
-        content: string;
-      }
-    ) => {
+    const pdfWidth =
+      pdf.internal.pageSize.getWidth();
 
-      const role =
-        message.role === "user"
-          ? "User"
-          : "AI Consultant";
+    const pdfHeight =
+      (canvas.height *
+        pdfWidth) /
+      canvas.width;
 
-      doc.setFontSize(14);
+    pdf.addImage(
+      imgData,
+      "PNG",
+      0,
+      0,
+      pdfWidth,
+      pdfHeight
+    );
 
-      doc.text(role, 20, y);
+    pdf.save(
+      "saas-evaluation-report.pdf"
+    );
 
-      y += 8;
+  } catch (error) {
 
-      doc.setFontSize(11);
+    console.error(error);
 
-      const lines =
-        doc.splitTextToSize(
-          message.content,
-          170
-        );
-
-      doc.text(lines, 20, y);
-
-      y += lines.length * 7 + 12;
-
-      if (y > 260) {
-        doc.addPage();
-
-        y = 20;
-      }
-    }
-  );
-
-  doc.save("consultation-report.pdf");
+    alert(
+      "Failed to export report."
+    );
+  }
 };
 
 function Sidebar() {
-  const handleNewChat = async () => {
+
+  const handleNewChat =
+    async () => {
+
     await resetChat();
 
     window.location.reload();
   };
+
   return (
+
     <div className="w-72 border-r border-slate-800 p-4 flex flex-col">
 
+      {/* HEADER */}
       <div className="mb-8">
+
         <h1 className="text-2xl font-bold">
+
           AI SaaS Consultant
+
         </h1>
 
         <p className="text-sm text-slate-400 mt-2">
+
           Build smarter SaaS ideas with AI guidance.
+
         </p>
+
       </div>
 
+      {/* NEW CHAT */}
       <button
-        onClick={handleNewChat}
-        className="bg-white text-black rounded-lg px-4 py-3 font-medium hover:bg-slate-200 transition">
+        onClick={
+          handleNewChat
+        }
+        className="bg-white text-black rounded-xl px-4 py-3 font-medium hover:bg-slate-200 transition mb-4"
+      >
+
         + New Chat
+
       </button>
 
+      {/* EXPORT REPORT */}
       <button
-        onClick={exportChat}
+        onClick={
+          exportReport
+        }
         className="w-full bg-slate-800 hover:bg-slate-700 transition rounded-xl px-4 py-3"
       >
-        Export Conversation
+
+        Export SaaS Report
+
       </button>
 
+      {/* HISTORY */}
       <div className="mt-6 space-y-2">
 
         <div className="p-3 rounded-lg bg-slate-900 hover:bg-slate-800 cursor-pointer transition">
+
           SaaS Idea Discussion
+
         </div>
 
         <div className="p-3 rounded-lg hover:bg-slate-800 cursor-pointer transition">
+
           AI Startup Planning
+
         </div>
 
       </div>

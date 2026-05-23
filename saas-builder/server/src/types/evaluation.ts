@@ -1,5 +1,4 @@
 export type DetailedMetric = {
-
   score: number;
 
   reason: string;
