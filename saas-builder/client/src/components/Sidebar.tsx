@@ -1,115 +1,145 @@
+import { useState } from "react";
+
 import { resetChat }
-from "../services/chat.service";
+  from "../services/chat.service";
 
 import jsPDF from "jspdf";
 
 import html2canvas
-from "html2canvas";
+  from "html2canvas";
 
 const exportReport =
   async () => {
 
-  const report =
-    document.getElementById(
-      "saas-report-dashboard"
-    );
-
-  if (!report) {
-
-    alert(
-      "No SaaS report found."
-    );
-
-    return;
-  }
-
-  try {
-
-    const canvas =
-      await html2canvas(
-        report,
-        {
-          scale: 2,
-          useCORS: true,
-          backgroundColor:
-            "#020617",
-        }
+    const report =
+      document.getElementById(
+        "saas-report-dashboard"
       );
 
-    const imgData =
-      canvas.toDataURL(
-        "image/png"
+    if (!report) {
+
+      alert(
+        "No SaaS report found."
       );
 
-    const pdf =
-      new jsPDF({
-        orientation:
-          "portrait",
+      return;
+    }
 
-        unit: "px",
+    try {
 
-        format: "a4",
-      });
+      const canvas =
+        await html2canvas(
+          report,
+          {
+            scale: 2,
+            useCORS: true,
+            backgroundColor:
+              "#020617",
+          }
+        );
 
-    const pdfWidth =
-      pdf.internal.pageSize.getWidth();
+      const imgData =
+        canvas.toDataURL(
+          "image/png"
+        );
 
-    const pdfHeight =
-      (canvas.height *
-        pdfWidth) /
-      canvas.width;
+      const pdf =
+        new jsPDF({
+          orientation:
+            "portrait",
 
-    pdf.addImage(
-      imgData,
-      "PNG",
-      0,
-      0,
-      pdfWidth,
-      pdfHeight
-    );
+          unit: "px",
 
-    pdf.save(
-      "saas-evaluation-report.pdf"
-    );
+          format: "a4",
+        });
 
-  } catch (error) {
+      const pdfWidth =
+        pdf.internal.pageSize.getWidth();
 
-    console.error(error);
+      const pdfHeight =
+        (canvas.height *
+          pdfWidth) /
+        canvas.width;
 
-    alert(
-      "Failed to export report."
-    );
-  }
-};
+      pdf.addImage(
+        imgData,
+        "PNG",
+        0,
+        0,
+        pdfWidth,
+        pdfHeight
+      );
+
+      pdf.save(
+        "saas-evaluation-report.pdf"
+      );
+
+    } catch (error) {
+
+      console.error(error);
+
+      alert(
+        "Failed to export report."
+      );
+    }
+  };
 
 function Sidebar() {
+  const [isCollapsed, setIsCollapsed] =
+    useState(false);
 
   const handleNewChat =
     async () => {
 
-    await resetChat();
+      await resetChat();
 
-    window.location.reload();
-  };
+      window.location.reload();
+    };
 
   return (
 
-    <div className="w-72 border-r border-slate-800 p-4 flex flex-col">
+    <div
+      className={`border-r border-slate-800 p-4 flex flex-col transition-all duration-200 ${isCollapsed ? "w-20" : "w-72"
+        }`}
+    >
+      <div className="flex justify-end mb-3">
+        <button
+          onClick={() =>
+            setIsCollapsed((prev) => !prev)
+          }
+          aria-label={
+            isCollapsed
+              ? "Expand sidebar"
+              : "Collapse sidebar"
+          }
+          className="bg-slate-800 hover:bg-slate-700 rounded-lg px-3 py-1 text-sm"
+        >
+          {isCollapsed ? "→" : "←"}
+        </button>
+      </div>
 
       {/* HEADER */}
-      <div className="mb-8">
+      <div className="mb-5">
 
-        <h1 className="text-2xl font-bold">
+        <div className="flex items-center gap-3 mb-3">
+          <img
+            src="/cloudtrains_logo.png"
+            alt="CloudTrains logo"
+            className="h-10 w-10 rounded-lg object-contain bg-white p-1"
+          />
 
-          AI SaaS Consultant
+          {!isCollapsed && (
+            <h1 className="text-2xl font-bold leading-none">
+              AI SaaS Consultant
+            </h1>
+          )}
+        </div>
 
-        </h1>
-
-        <p className="text-sm text-slate-400 mt-2">
-
-          Build smarter SaaS ideas with AI guidance.
-
-        </p>
+        {!isCollapsed && (
+          <p className="text-sm text-slate-400 mt-2">
+            Build smarter SaaS ideas with AI guidance.
+          </p>
+        )}
 
       </div>
 
@@ -121,7 +151,7 @@ function Sidebar() {
         className="bg-white text-black rounded-xl px-4 py-3 font-medium hover:bg-slate-200 transition mb-4"
       >
 
-        + New Chat
+        {isCollapsed ? "+" : "+ New Chat"}
 
       </button>
 
@@ -130,30 +160,12 @@ function Sidebar() {
         onClick={
           exportReport
         }
-        className="w-full bg-slate-800 hover:bg-slate-700 transition rounded-xl px-4 py-3"
+        className="w-full bg-slate-800 hover:bg-slate-700 transition rounded-xl px-1 py-3"
       >
 
-        Export SaaS Report
+        {isCollapsed ? "Save" : "Export SaaS Report"}
 
       </button>
-
-      {/* HISTORY */}
-      <div className="mt-6 space-y-2">
-
-        <div className="p-3 rounded-lg bg-slate-900 hover:bg-slate-800 cursor-pointer transition">
-
-          SaaS Idea Discussion
-
-        </div>
-
-        <div className="p-3 rounded-lg hover:bg-slate-800 cursor-pointer transition">
-
-          AI Startup Planning
-
-        </div>
-
-      </div>
-
     </div>
   );
 }
