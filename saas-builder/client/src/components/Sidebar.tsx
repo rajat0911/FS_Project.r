@@ -114,7 +114,7 @@ function Sidebar() {
           }
           className="bg-slate-800 hover:bg-slate-700 rounded-lg px-3 py-1 text-sm"
         >
-          {isCollapsed ? "→" : "←"}
+          {isCollapsed ? ">" : "<"}
         </button>
       </div>
 
@@ -123,7 +123,7 @@ function Sidebar() {
 
         <div className="flex items-center gap-3 mb-3">
           <img
-            src="/cloudtrains_logo.png"
+            src="/new_Log.png"
             alt="CloudTrains logo"
             className="h-10 w-10 rounded-lg object-contain bg-white p-1"
           />
