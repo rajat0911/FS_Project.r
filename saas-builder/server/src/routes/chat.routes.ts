@@ -13,12 +13,10 @@ const router = Router();
 
 const ai = new GoogleGenAI({
   apiKey:
-    process.env.GEMINI_API_KEY!,
-});
+      process.env.GEMINI_API_KEY!,
+      });
 
-/* -------------------------------- */
 /* METRIC STATE */
-/* -------------------------------- */
 
 let currentQuestionIndex = 0;
 
@@ -46,9 +44,7 @@ let startupMetrics:
   tech_stack: "",
 };
 
-/* -------------------------------- */
 /* RESET */
-/* -------------------------------- */
 
 function resetConversation() {
 
@@ -70,9 +66,8 @@ function resetConversation() {
   };
 }
 
-/* -------------------------------- */
+
 /* CHAT ROUTE */
-/* -------------------------------- */
 
 router.post(
   "/",
@@ -89,9 +84,7 @@ router.post(
 
       console.log(message);
 
-      /* ---------------------------- */
       /* FIRST MESSAGE */
-      /* ---------------------------- */
 
       if (!interviewStarted) {
 
@@ -103,10 +96,7 @@ router.post(
 
 I will analyze your startup idea,
 evaluate its market potential,
-technical feasibility,
-competition level,
-scalability,
-and business growth opportunities.
+technical feasibility, competition level, scalability, and business growth opportunities.
 
 Let's begin 👇
 
@@ -114,9 +104,7 @@ ${metrics[0]}`
         });
       }
 
-      /* ---------------------------- */
       /* STORE USER ANSWER */
-      /* ---------------------------- */
 
       const currentKey =
         metricKeys[
@@ -135,9 +123,7 @@ ${metrics[0]}`
         startupMetrics
       );
 
-      /* ---------------------------- */
       /* ASK NEXT QUESTION */
-      /* ---------------------------- */
 
       if (
         currentQuestionIndex <
@@ -154,9 +140,7 @@ ${metrics[0]}`
         });
       }
 
-      /* ---------------------------- */
       /* FINAL AI EVALUATION */
-      /* ---------------------------- */
 
       console.log(
         "GENERATING AI EVALUATION..."
@@ -192,9 +176,7 @@ ${JSON.stringify(
 
       console.log(rawText);
 
-      /* ---------------------------- */
       /* CLEAN RESPONSE */
-      /* ---------------------------- */
 
       const cleanedText =
         rawText
@@ -220,9 +202,7 @@ ${JSON.stringify(
         cleanedText
       );
 
-      /* ---------------------------- */
       /* PARSE JSON */
-      /* ---------------------------- */
 
       let parsedData;
 
@@ -270,16 +250,10 @@ ${JSON.stringify(
         parsedData
       );
 
-      /* ---------------------------- */
-      /* RESET SESSION */
-      /* ---------------------------- */
-
       resetConversation();
 
-      /* ---------------------------- */
-      /* RETURN RESPONSE */
-      /* ---------------------------- */
-
+            /* RETURN RESPONSE */
+      
       return res.json({
         reply: {
           ...parsedData
@@ -301,10 +275,8 @@ ${JSON.stringify(
     }
   }
 );
-
-/* -------------------------------- */
 /* RESET ROUTE */
-/* -------------------------------- */
+
 
 router.post(
   "/reset",

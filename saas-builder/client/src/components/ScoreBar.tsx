@@ -6,109 +6,49 @@ function ScoreBar({
   score,
 }: Props) {
 
-  const getBarColor = () => {
+  // Convert 0-10 → percentage
+  const percentage =
+    Math.min(score * 10, 100);
 
-    if (score >= 80) {
-      return "bg-green-500";
-    }
+  // Dynamic colors
+  const getColor = () => {
 
-    if (score >= 60) {
-      return "bg-yellow-500";
-    }
+    if (score >= 8)
+      return "bg-green-400";
 
-    if (score >= 40) {
-      return "bg-orange-500";
-    }
+    if (score >= 6)
+      return "bg-yellow-400";
+
+    if (score >= 4)
+      return "bg-orange-400";
 
     return "bg-red-500";
   };
 
-  const getLabel = () => {
-
-    if (score >= 85) {
-      return "Excellent";
-    }
-
-    if (score >= 70) {
-      return "Strong";
-    }
-
-    if (score >= 55) {
-      return "Average";
-    }
-
-    if (score >= 40) {
-      return "Weak";
-    }
-
-    return "High Risk";
-  };
-
   return (
 
-    <div className="space-y-3">
+    <div
+      className="
+      w-full
+      h-3
+      bg-slate-800
+      rounded-full
+      overflow-hidden
+    "
+    >
 
-      {/* LABELS */}
-      <div className="flex items-center justify-between">
-
-        <span className="text-sm text-slate-400">
-
-          Performance Score
-
-        </span>
-
-        <span
-          className={`
-            text-sm
-            font-semibold
-
-            ${
-              score >= 80
-                ? "text-green-400"
-                : score >= 60
-                ? "text-yellow-400"
-                : score >= 40
-                ? "text-orange-400"
-                : "text-red-400"
-            }
-          `}
-        >
-          {getLabel()}
-        </span>
-
-      </div>
-
-      {/* BAR CONTAINER */}
-      <div className="w-full h-4 bg-slate-800 rounded-full overflow-hidden">
-
-        {/* PROGRESS */}
-        <div
-          className={`
-            h-full
-            rounded-full
-            transition-all
-            duration-1000
-            ease-out
-
-            ${getBarColor()}
-          `}
-          style={{
-            width: `${score}%`,
-          }}
-        />
-
-      </div>
-
-      {/* FOOTER */}
-      <div className="flex justify-between text-xs text-slate-500">
-
-        <span>0</span>
-
-        <span>50</span>
-
-        <span>100</span>
-
-      </div>
+      <div
+        className={`
+          h-full
+          transition-all
+          duration-700
+          rounded-full
+          ${getColor()}
+        `}
+        style={{
+          width: `${percentage}%`,
+        }}
+      />
 
     </div>
   );

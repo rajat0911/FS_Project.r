@@ -1,5 +1,4 @@
-export type DetailedMetric = {
-
+export type MetricDetails = {
   score: number;
 
   reason: string;
@@ -14,6 +13,18 @@ export type DetailedMetric = {
 
   optimization_potential: string;
 
+  growth_if_optimized: string;
+
+  growth_without_changes: string;
+
+  revenue_impact: string;
+
+  user_retention_impact: string;
+
+  conversion_rate_impact: string;
+
+  estimated_business_boost: string;
+
   market_effect: string;
 
   scalability_effect: string;
@@ -23,25 +34,57 @@ export type DetailedMetric = {
   recommended_changes: string[];
 };
 
+export type StartupProjection = {
+  estimated_market_size: string;
+
+  market_growth_rate: string;
+
+  projected_yearly_revenue: string;
+
+  projected_monthly_revenue: string;
+
+  estimated_break_even_time: string;
+
+  customer_acquisition_cost: string;
+
+  estimated_ltv: string;
+
+  startup_success_probability: string;
+
+  investor_interest_score: number;
+
+  scalability_rating: number;
+
+  execution_difficulty: string;
+
+  competition_level: string;
+
+  growth_potential: string;
+
+  profitability_potential: string;
+};
+
 export type EvaluationReport = {
 
   overall_score: number;
 
   overall_summary: string;
 
-  market_potential: DetailedMetric;
+  startup_projection: StartupProjection;
 
-  audience_analysis: DetailedMetric;
+  market_potential: MetricDetails;
 
-  tech_stack_analysis: DetailedMetric;
+  audience_analysis: MetricDetails;
 
-  budget_analysis: DetailedMetric;
+  tech_stack_analysis: MetricDetails;
 
-  location_analysis: DetailedMetric;
+  budget_analysis: MetricDetails;
 
-  monetization_analysis: DetailedMetric;
+  location_analysis: MetricDetails;
 
-  competition_analysis: DetailedMetric;
+  monetization_analysis: MetricDetails;
+
+  competition_analysis: MetricDetails;
 
   final_verdict: string;
 

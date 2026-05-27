@@ -1,17 +1,125 @@
 import type {
-  DetailedMetric,
+  MetricDetails,
 } from "../../../shared/types/evaluation";
 
-import ScoreBar
-from "./ScoreBar";
+import ScoreBar from "./ScoreBar";
+
+import {
+  Bar,
+  Pie,
+  Line,
+  Radar,
+} from "react-chartjs-2";
+
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  PointElement,
+  LineElement,
+  RadialLinearScale,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  PointElement,
+  LineElement,
+  RadialLinearScale,
+  Tooltip,
+  Legend
+);
+
+const radarOptions = {
+  responsive: true,
+
+  maintainAspectRatio: false,
+
+  plugins: {
+    legend: {
+      labels: {
+        color: "#cbd5e1",
+
+        font: {
+          size: 14,
+        },
+      },
+    },
+  },
+
+  scales: {
+    r: {
+      angleLines: {
+        color: "#1e293b",
+      },
+
+      grid: {
+        color: "#1e293b",
+      },
+
+      pointLabels: {
+        color: "#cbd5e1",
+      },
+
+      ticks: {
+        color: "#94a3b8",
+
+        backdropColor:
+          "transparent",
+      },
+    },
+  },
+};
 
 type Props = {
   title: string;
-
   emoji: string;
-
-  metric: DetailedMetric;
+  metric: MetricDetails;
 };
+
+const chartOptions = {
+  responsive: true,
+
+  maintainAspectRatio: false,
+
+  plugins: {
+    legend: {
+      labels: {
+        color: "#cbd5e1",
+        font: {
+          size: 14,
+        },
+      },
+    },
+  },
+  scales: {
+    r: {
+      angleLines: {
+        color: "#1e293b",
+      },
+
+      grid: {
+        color: "#1e293b",
+      },
+
+      pointLabels: {
+        color: "#cbd5e1",
+      },
+
+      ticks: {
+        color: "#94a3b8",
+        backdropColor: "transparent",
+      },
+    },
+  },
+};
+
 
 function MetricCard({
   title,
@@ -19,36 +127,85 @@ function MetricCard({
   metric,
 }: Props) {
 
+const extractNumber = (
+  value: string
+) => {
+
+  const match =
+    value.match(/\d+/);
+
+  return match
+    ? Number(match[0])
+    : 0;
+};
+
+const growth =
+  extractNumber(
+    metric.growth_if_optimized
+  );
+
+const revenue =
+  extractNumber(
+    metric.revenue_impact
+  );
+
+const retention =
+  extractNumber(
+    metric.user_retention_impact
+  );
+
+const conversion =
+  extractNumber(
+    metric.conversion_rate_impact
+  );
+
+  const labels = [
+    "Growth",
+    "Revenue",
+    "Retention",
+    "Conversion",
+  ];
+
+  const values = [
+    growth,
+    revenue,
+    retention,
+    conversion,
+  ];
+
   return (
 
-    <div className="bg-slate-950 border border-slate-800 rounded-3xl p-8 space-y-8">
+    <div
+      className="
+        bg-slate-950
+        border border-slate-800
+        rounded-3xl
+        p-6
+        space-y-6
+        overflow-hidden
+      "
+    >
 
       {/* HEADER */}
       <div className="flex items-center justify-between">
 
-        <div>
+        <h2 className="text-2xl font-bold text-white">
 
-          <h2 className="text-3xl font-bold text-white flex items-center gap-3">
+          {emoji} {title}
 
-            <span>{emoji}</span>
-
-            <span>{title}</span>
-
-          </h2>
-
-        </div>
+        </h2>
 
         <div className="text-right">
 
-          <div className="text-5xl font-bold text-green-400">
+          <div className="text-4xl font-bold text-green-400">
 
-            {metric.score}
+            {metric.score.toFixed(1)}
 
           </div>
 
-          <div className="text-slate-400 text-sm">
+          <div className="text-slate-500 text-sm">
 
-            /100
+            /10
 
           </div>
 
@@ -57,295 +214,210 @@ function MetricCard({
       </div>
 
       {/* SCORE BAR */}
-      <ScoreBar
-        score={metric.score}
-      />
+      <ScoreBar score={metric.score} />
 
-      {/* REASON */}
-      <div>
+      {/* KPI GRID */}
+      <div className="grid grid-cols-2 gap-4">
 
-        <h3 className="text-xl font-semibold text-white mb-3">
+        <KPI
+          label="📈 Growth"
+          value={metric.growth_if_optimized}
+        />
 
-          📌 Analysis
+        <KPI
+          label="💰 Revenue"
+          value={metric.revenue_impact}
+        />
 
-        </h3>
+        <KPI
+          label="👥 Retention"
+          value={metric.user_retention_impact}
+        />
 
-        <p className="text-slate-300 leading-8">
-
-          {metric.reason}
-
-        </p>
+        <KPI
+          label="🚀 Conversion"
+          value={metric.conversion_rate_impact}
+        />
 
       </div>
 
-      {/* ADVANTAGES */}
-      {metric.advantages?.length > 0 && (
-
-        <div>
-
-          <h3 className="text-xl font-semibold text-green-400 mb-4">
-
-            ✅ Advantages
-
-          </h3>
-
-          <div className="space-y-3">
-
-            {metric.advantages.map(
-              (
-                item,
-                index
-              ) => (
-
-                <div
-                  key={index}
-                  className="bg-green-500/5 border border-green-500/10 rounded-2xl p-4"
-                >
-
-                  <p className="text-slate-300 leading-7">
-
-                    {item}
-
-                  </p>
-
-                </div>
-
-              )
-            )}
-
-          </div>
-
-        </div>
-
-      )}
-
-      {/* RISKS */}
-      {metric.risks?.length > 0 && (
-
-        <div>
-
-          <h3 className="text-xl font-semibold text-red-400 mb-4">
-
-            ⚠️ Risks
-
-          </h3>
-
-          <div className="space-y-3">
-
-            {metric.risks.map(
-              (
-                item,
-                index
-              ) => (
-
-                <div
-                  key={index}
-                  className="bg-red-500/5 border border-red-500/10 rounded-2xl p-4"
-                >
-
-                  <p className="text-slate-300 leading-7">
-
-                    {item}
-
-                  </p>
-
-                </div>
-
-              )
-            )}
-
-          </div>
-
-        </div>
-
-      )}
-
-      {/* IMPROVEMENTS */}
-      {metric.improvement_suggestions?.length > 0 && (
-
-        <div>
-
-          <h3 className="text-xl font-semibold text-yellow-400 mb-4">
-
-            🚀 Improvement Suggestions
-
-          </h3>
-
-          <div className="space-y-3">
-
-            {metric.improvement_suggestions.map(
-              (
-                item,
-                index
-              ) => (
-
-                <div
-                  key={index}
-                  className="bg-yellow-500/5 border border-yellow-500/10 rounded-2xl p-4"
-                >
-
-                  <p className="text-slate-300 leading-7">
-
-                    {item}
-
-                  </p>
-
-                </div>
-
-              )
-            )}
-
-          </div>
-
-        </div>
-
-      )}
-
-      {/* BUSINESS IMPACT */}
-      {metric.business_impact && (
-
-        <div className="bg-cyan-500/5 border border-cyan-500/10 rounded-2xl p-5">
-
-          <h3 className="text-xl font-semibold text-cyan-400 mb-3">
-
-            📈 Business Impact
-
-          </h3>
-
-          <p className="text-slate-300 leading-8">
-
-            {metric.business_impact}
-
-          </p>
-
-        </div>
-
-      )}
-
-      {/* OPTIMIZATION */}
-      {metric.optimization_potential && (
-
-        <div className="bg-blue-500/5 border border-blue-500/10 rounded-2xl p-5">
-
-          <h3 className="text-xl font-semibold text-blue-400 mb-3">
-
-            ⚡ Optimization Potential
-
-          </h3>
-
-          <p className="text-slate-300 leading-8">
-
-            {metric.optimization_potential}
-
-          </p>
-
-        </div>
-
-      )}
-
-      {/* MARKET EFFECT */}
-      {metric.market_effect && (
-
-        <div className="bg-purple-500/5 border border-purple-500/10 rounded-2xl p-5">
-
-          <h3 className="text-xl font-semibold text-purple-400 mb-3">
-
-            🌍 Market Effect
-
-          </h3>
-
-          <p className="text-slate-300 leading-8">
-
-            {metric.market_effect}
-
-          </p>
-
-        </div>
-
-      )}
-
-      {/* SCALABILITY */}
-      {metric.scalability_effect && (
-
-        <div className="bg-indigo-500/5 border border-indigo-500/10 rounded-2xl p-5">
-
-          <h3 className="text-xl font-semibold text-indigo-400 mb-3">
-
-            📦 Scalability Effect
-
-          </h3>
-
-          <p className="text-slate-300 leading-8">
-
-            {metric.scalability_effect}
-
-          </p>
-
-        </div>
-
-      )}
-
-      {/* INVESTOR VIEW */}
-      {metric.investor_perspective && (
-
-        <div className="bg-pink-500/5 border border-pink-500/10 rounded-2xl p-5">
-
-          <h3 className="text-xl font-semibold text-pink-400 mb-3">
-
-            💰 Investor Perspective
-
-          </h3>
-
-          <p className="text-slate-300 leading-8">
-
-            {metric.investor_perspective}
-
-          </p>
-
-        </div>
-
-      )}
-
-      {/* RECOMMENDED CHANGES */}
-      {metric.recommended_changes?.length > 0 && (
-
-        <div>
-
-          <h3 className="text-xl font-semibold text-orange-400 mb-4">
-
-            🔥 Recommended Changes
-
-          </h3>
-
-          <div className="space-y-3">
-
-            {metric.recommended_changes.map(
-              (
-                item,
-                index
-              ) => (
-
-                <div
-                  key={index}
-                  className="bg-orange-500/5 border border-orange-500/10 rounded-2xl p-4"
-                >
-
-                  <p className="text-slate-300 leading-7">
-
-                    {item}
-
-                  </p>
-
-                </div>
-
-              )
-            )}
-
-          </div>
-
-        </div>
-
-      )}
+      {/* CHART AREA */}
+      <div
+        className="
+    h-72
+    bg-slate-900
+    border border-slate-800
+    rounded-3xl
+    p-4
+  "
+      >
+
+        {/* MARKET */}
+        {title === "Market Potential" && (
+
+          <Line
+            data={{
+              labels,
+              datasets: [
+                {
+                  label: "Market Growth",
+                  data: values,
+
+                  borderColor: "#4ade80",
+
+                  backgroundColor:
+                    "rgba(74, 222, 128, 0.2)",
+
+                  borderWidth: 4,
+
+                  tension: 0.4,
+
+                  fill: true,
+
+                  pointRadius: 5,
+
+                  pointBackgroundColor:
+                    "#4ade80",
+                },
+              ],
+            }}
+            options={chartOptions}
+          />
+
+        )}
+
+        {/* AUDIENCE */}
+        {title === "Audience Analysis" && (
+
+          <Pie
+            data={{
+              labels,
+              datasets: [
+                {
+                  data: values,
+
+                  backgroundColor: [
+                    "#4ade80",
+                    "#38bdf8",
+                    "#c084fc",
+                    "#f59e0b",
+                  ],
+
+                  borderWidth: 0,
+                },
+              ],
+            }}
+            options={chartOptions}
+          />
+
+        )}
+
+        {/* COMPETITION */}
+        {title === "Competition Analysis" && (
+
+          <Radar
+            data={{
+              labels,
+              datasets: [
+                {
+                  label: "Competitive Strength",
+
+                  data: values,
+
+                  backgroundColor:
+                    "rgba(56, 189, 248, 0.2)",
+
+                  borderColor: "#38bdf8",
+
+                  borderWidth: 3,
+
+                  pointBackgroundColor:
+                    "#38bdf8",
+                },
+              ],
+            }}
+
+            options={radarOptions}
+          />
+
+        )}
+
+        {/* DEFAULT */}
+        {title !== "Market Potential" &&
+          title !== "Audience Analysis" &&
+          title !== "Competition Analysis" && (
+
+            <Bar
+              data={{
+                labels,
+                datasets: [
+                  {
+                    label: "Business Metrics",
+
+                    data: values,
+
+                    backgroundColor: [
+                      "#4ade80",
+                      "#38bdf8",
+                      "#c084fc",
+                      "#f59e0b",
+                    ],
+
+                    borderRadius: 12,
+                  },
+                ],
+              }}
+              options={chartOptions}
+            />
+
+          )}
+
+      </div>
+
+    </div>
+  );
+}
+
+/* KPI */
+
+function KPI({
+  label,
+  value,
+}: {
+  label: string;
+  value: string;
+}) {
+
+  return (
+
+    <div
+      className="
+        bg-slate-900
+        border border-slate-800
+        rounded-2xl
+        px-4
+        py-3
+      "
+    >
+
+      <div className="text-xs text-slate-400">
+
+        {label}
+
+      </div>
+
+      <div
+        className="
+          text-xl
+          font-bold
+          text-white
+          mt-1
+        "
+      >
+
+        {value}
+
+      </div>
 
     </div>
   );

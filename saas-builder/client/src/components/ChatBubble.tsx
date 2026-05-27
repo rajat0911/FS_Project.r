@@ -1,89 +1,70 @@
 import type { Message }
-    from "../../../shared/types/message";
+from "../../../shared/types/message";
 
-import ReactMarkdown
-    from "react-markdown";
-
-import type {
-    EvaluationReport,
-} from "../../../shared/types/evaluation";
-
-import remarkGfm
-    from "remark-gfm";
+import type { EvaluationReport }
+from "../../../shared/types/evaluation";
 
 import EvaluationDashboard
-    from "./EvaluationDashboard";
+from "./EvaluationDashboard";
+
+type Props = {
+  message: Message;
+};
 
 function ChatBubble({
-    message,
-}: {
-    message: Message;
-}) {
+  message,
+}: Props) {
 
-    const isUser =
-        message.role === "user";
+  const isUser =
+    message.role === "user";
 
-    const isEvaluationReport =
-        typeof message.content === "object";
+  const isReport =
+    typeof message.content === "object";
 
-    return (
+  return (
 
-        <div
-            className={`flex ${isUser
-                ? "justify-end"
-                : "justify-start"
-                }`}
-        >
+    <div
+      className={`flex ${
+        isUser
+          ? "justify-end"
+          : "justify-start"
+      }`}
+    >
 
-            <div
-                className={`max-w-5xl rounded-3xl ${isUser
-                    ? "bg-white text-black px-6 py-4"
-                    : "text-white"
-                    }`}
-            >
+      <div
+        className={`max-w-6xl rounded-3xl px-6 py-5 ${
+          isUser
+            ? "bg-white text-black"
+            : "bg-slate-900 text-white"
+        }`}
+      >
 
-                {/* USER MESSAGE */}
-                {isUser && (
-                    <p className="leading-7">
-                        {message.content as string}
-                    </p>
-                )}
+        {/* USER MESSAGE */}
+        {typeof message.content === "string" && (
 
-                {/* NORMAL AI MESSAGE */}
-                {!isUser &&
-                    !isEvaluationReport && (
+          <p className="leading-8 whitespace-pre-wrap">
 
-                        <div className="bg-slate-950 border border-slate-800 px-6 py-5 rounded-3xl">
+            {message.content}
 
-                            <ReactMarkdown
-                                remarkPlugins={[
-                                    remarkGfm,
-                                ]}
-                            >
+          </p>
 
-                                {message.content as string}
+        )}
 
-                            </ReactMarkdown>
+        {/* AI REPORT */}
+        {isReport && (
 
-                        </div>
-                    )}
+          <EvaluationDashboard
+            report={
+              message.content as EvaluationReport
+            }
+          />
 
-                {/* AI DASHBOARD */}
-                {!isUser &&
-                    isEvaluationReport && (
+        )}
 
-                        <EvaluationDashboard
-                            report={
-                                message.content as EvaluationReport
-                            }
-                        />
+      </div>
 
-                    )}
-
-            </div>
-
-        </div>
-    );
+    </div>
+  );
 }
 
 export default ChatBubble;

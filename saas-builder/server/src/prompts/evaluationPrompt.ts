@@ -25,11 +25,27 @@ IMPORTANT RULES:
 RETURN EXACTLY THIS JSON:
 
 {
-  "overall_score": 0,
+  "overall_score": 0.0,
   "overall_summary": "",
+  "startup_projection": {
+  "estimated_market_size": "",
+  "market_growth_rate": "",
+  "projected_yearly_revenue": "",
+  "projected_monthly_revenue": "",
+  "estimated_break_even_time": "",
+  "customer_acquisition_cost": "",
+  "estimated_ltv": "",
+  "startup_success_probability": "",
+  "investor_interest_score": 0.0,
+  "scalability_rating": 0.0,
+  "execution_difficulty": "",
+  "competition_level": "",
+  "growth_potential": "",
+  "profitability_potential": ""
+},
 
   "market_potential": {
-    "score": 0,
+    "score": 0.0,
     "reason": "",
     "advantages": [],
     "risks": [],
@@ -39,11 +55,17 @@ RETURN EXACTLY THIS JSON:
     "market_effect": "",
     "scalability_effect": "",
     "investor_perspective": "",
-    "recommended_changes": []
+    "recommended_changes": [],
+    "growth_if_optimized": "",
+"growth_without_changes": "",
+"revenue_impact": "",
+"user_retention_impact": "",
+"conversion_rate_impact": "",
+"estimated_business_boost": "",
   },
 
   "audience_analysis": {
-    "score": 0,
+    "score": 0.0,
     "reason": "",
     "advantages": [],
     "risks": [],
@@ -53,11 +75,17 @@ RETURN EXACTLY THIS JSON:
     "market_effect": "",
     "scalability_effect": "",
     "investor_perspective": "",
-    "recommended_changes": []
+    "recommended_changes": [],
+    "growth_if_optimized": "",
+"growth_without_changes": "",
+"revenue_impact": "",
+"user_retention_impact": "",
+"conversion_rate_impact": "",
+"estimated_business_boost": "",
   },
 
   "tech_stack_analysis": {
-    "score": 0,
+    "score": 0.0,
     "reason": "",
     "advantages": [],
     "risks": [],
@@ -67,11 +95,17 @@ RETURN EXACTLY THIS JSON:
     "market_effect": "",
     "scalability_effect": "",
     "investor_perspective": "",
-    "recommended_changes": []
+    "recommended_changes": [],
+    "growth_if_optimized": "",
+"growth_without_changes": "",
+"revenue_impact": "",
+"user_retention_impact": "",
+"conversion_rate_impact": "",
+"estimated_business_boost": "",
   },
 
   "budget_analysis": {
-    "score": 0,
+    "score": 0.0,
     "reason": "",
     "advantages": [],
     "risks": [],
@@ -81,11 +115,17 @@ RETURN EXACTLY THIS JSON:
     "market_effect": "",
     "scalability_effect": "",
     "investor_perspective": "",
-    "recommended_changes": []
+    "recommended_changes": [],
+    "growth_if_optimized": "",
+"growth_without_changes": "",
+"revenue_impact": "",
+"user_retention_impact": "",
+"conversion_rate_impact": "",
+"estimated_business_boost": "",
   },
 
   "location_analysis": {
-    "score": 0,
+    "score": 0.0,
     "reason": "",
     "advantages": [],
     "risks": [],
@@ -95,11 +135,17 @@ RETURN EXACTLY THIS JSON:
     "market_effect": "",
     "scalability_effect": "",
     "investor_perspective": "",
-    "recommended_changes": []
+    "recommended_changes": [],
+    "growth_if_optimized": "",
+"growth_without_changes": "",
+"revenue_impact": "",
+"user_retention_impact": "",
+"conversion_rate_impact": "",
+"estimated_business_boost": "",
   },
 
   "monetization_analysis": {
-    "score": 0,
+    "score": 0.0,
     "reason": "",
     "advantages": [],
     "risks": [],
@@ -109,11 +155,17 @@ RETURN EXACTLY THIS JSON:
     "market_effect": "",
     "scalability_effect": "",
     "investor_perspective": "",
-    "recommended_changes": []
+    "recommended_changes": [],
+    "growth_if_optimized": "",
+"growth_without_changes": "",
+"revenue_impact": "",
+"user_retention_impact": "",
+"conversion_rate_impact": "",
+"estimated_business_boost": "",
   },
 
   "competition_analysis": {
-    "score": 0,
+    "score": 0.0,
     "reason": "",
     "advantages": [],
     "risks": [],
@@ -123,7 +175,13 @@ RETURN EXACTLY THIS JSON:
     "market_effect": "",
     "scalability_effect": "",
     "investor_perspective": "",
-    "recommended_changes": []
+    "recommended_changes": [],
+    "growth_if_optimized": "",
+"growth_without_changes": "",
+"revenue_impact": "",
+"user_retention_impact": "",
+"conversion_rate_impact": "",
+"estimated_business_boost": "",
   },
 
   "startup_strengths": [],
@@ -188,6 +246,64 @@ DO NOT:
 - add markdown formatting
 
 Generate concise investor-grade startup analysis.
+
+IMPORTANT SCORING RULES:
+
+- All scores must be decimal ratings out of 10.
+- Example:
+  8.4
+  6.7
+  9.1
+
+- Never return scores out of 100.
+- Scores must feel realistic for startup evaluation.
+
+IMPORTANT ANALYSIS RULES:
+
+Think like:
+- Y Combinator partner
+- McKinsey SaaS consultant
+- Sequoia Capital analyst
+- B2B SaaS growth strategist
+
+Your analysis must feel:
+- analytical
+- numerical
+- investor-grade
+- market-backed
+- concise
+
+Use realistic startup assumptions.
+
+Prefer:
+- percentages
+- revenue estimates
+- retention impact
+- conversion impact
+- CAC/LTV reasoning
+- scalability estimates
+- market comparisons
+- growth projections
+
+Examples:
+- "Projected ARR: $120K-$300K within 24 months"
+- "Expected retention improvement: +18%"
+- "Potential CAC reduction: 12-20%"
+- "Estimated scalability improvement: +35%"
+- "Investor attractiveness likely above average for early-stage SaaS"
+
+Avoid:
+- generic advice
+- motivational language
+- essays
+- repeated statements
+- filler explanations
+
+Every section must be:
+- short
+- dense
+- data-driven
+- dashboard-ready
 `;
 
 export default EVALUATION_PROMPT;
