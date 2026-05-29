@@ -25,9 +25,7 @@ console.log(req.body);
           content,
           timestamp,
         },
-      ])
-      .select()
-      .single();
+      ]) .select() .single();
 
  if (error) {
   console.log("DATA:");

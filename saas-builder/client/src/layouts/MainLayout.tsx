@@ -4,26 +4,19 @@ import ChatInput from "../components/ChatInput";
 import type { Message } from "../../../shared/types/message";
 
 type Props = {
- messages: Message[];
+messages: Message[];
 
-setMessages: React.Dispatch<
-  React.SetStateAction<Message[]>
->;
-  isLoading: boolean;
+setMessages: React.Dispatch< React.SetStateAction<Message[]> >;
 
-setIsLoading: React.Dispatch<
-  React.SetStateAction<boolean>
->;
+isLoading: boolean;
+
+setIsLoading: React.Dispatch< React.SetStateAction<boolean> >;
+
 chatId: string;
 };
 
-function MainLayout({
-  messages,
-  setMessages,
-  isLoading,
-  setIsLoading,
-  chatId,
-}: Props) {
+function MainLayout({ messages, setMessages, isLoading, setIsLoading, chatId, }: Props) {
+
   return (
     <div className="h-screen bg-slate-950 text-white flex">
 
@@ -40,16 +33,19 @@ function MainLayout({
           </p>
         </div>
         
-        <ChatMessages
-  messages={messages}
-  isLoading={isLoading}
-/>
+        <ChatMessages messages={messages} isLoading={isLoading} />
 
-        <ChatInput
+<ChatInput
   setMessages={setMessages}
   setIsLoading={setIsLoading}
   isLoading={isLoading}
   chatId={chatId}
+
+  currentStep={
+    messages[
+      messages.length - 1
+    ]?.step
+  }
 />
 
       </div>

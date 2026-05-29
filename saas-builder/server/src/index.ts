@@ -15,9 +15,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Backend is running...");
-});
+app.get("/", (req, res) => { res.send("Backend is running..."); });
 
 app.use("/chat", chatRoutes);
 app.use("/session", sessionRoutes);
@@ -30,18 +28,9 @@ supabase
   .select("*")
   .then(({ data, error }) => {
 
-    if (error) {
-      console.log(
-        "Supabase Error:",
-        error.message
-      );
-    } else {
-      console.log(
-        "Supabase Connected ✅"
-      );
+    if (error) { console.log( "Supabase Error:", error.message );} 
 
-      console.log(data);
-    }
+    else { console.log( "Supabase Connected ✅" ); console.log(data); }
   });
 
 app.listen(PORT, "0.0.0.0", () => {

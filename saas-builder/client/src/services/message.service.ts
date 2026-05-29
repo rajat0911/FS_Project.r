@@ -11,23 +11,14 @@ export async function saveMessage(
     "/message/save",
     {
       method: "POST",
+      headers: { "Content-Type": "application/json", },
 
-      headers: {
-        "Content-Type":
-          "application/json",
-      },
-
-      body: JSON.stringify(
-        messageData
-      ),
+      body: JSON.stringify( messageData ),
     }
   );
 
   if (!response.ok) {
-
-    throw new Error(
-      "Failed to save message"
-    );
+    throw new Error( "Failed to save message" );
   }
 
   return await response.json();

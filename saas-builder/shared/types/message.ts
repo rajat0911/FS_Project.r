@@ -1,7 +1,36 @@
 import type {
-  EvaluationReport
-}
-from "./evaluation";
+  EvaluationReport,
+} from "./evaluation";
+
+/* ---------------------------------- */
+
+export type ConversationStep = {
+
+  id: string;
+
+  phase: number;
+
+  field: string;
+
+  goal: string;
+
+  placeholder?: string;
+
+  inputType:
+    | "text"
+    | "single_select"
+    | "multi_select";
+
+  options?: string[];
+
+  required?: boolean;
+
+  condition?: (
+    answers: Record<string, any>
+  ) => boolean;
+};
+
+/* ---------------------------------- */
 
 export type Message = {
 
@@ -14,4 +43,6 @@ export type Message = {
     | EvaluationReport;
 
   timestamp?: string;
+
+  step?: ConversationStep;
 };

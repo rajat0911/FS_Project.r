@@ -1,14 +1,9 @@
-type Props = {
-  score: number;
-};
+type Props = { score: number; };
 
-function ScoreBar({
-  score,
-}: Props) {
+function ScoreBar({ score, }: Props) {
 
   // Convert 0-10 → percentage
-  const percentage =
-    Math.min(score * 10, 100);
+  const percentage = Math.min(score * 10, 100);
 
   // Dynamic colors
   const getColor = () => {
@@ -26,31 +21,11 @@ function ScoreBar({
   };
 
   return (
+    <div className=" w-full h-3 bg-slate-800 rounded-full overflow-hidden " >
 
-    <div
-      className="
-      w-full
-      h-3
-      bg-slate-800
-      rounded-full
-      overflow-hidden
-    "
-    >
-
-      <div
-        className={`
-          h-full
-          transition-all
-          duration-700
-          rounded-full
-          ${getColor()}
-        `}
-        style={{
-          width: `${percentage}%`,
-        }}
-      />
-
-    </div>
+      <div className={` h-full transition-all duration-700 rounded-full ${getColor()} `} 
+           style={{ width: `${percentage}%`, }} />
+     </div>
   );
 }
 
