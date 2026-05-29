@@ -1,0 +1,17 @@
+Node.js >= 20
+npm >= 10
+
+Frontend:
+react
+typescript
+tailwindcss
+chart.js
+react-chartjs-2
+react-is
+vite
+
+Backend:
+express
+cors
+dotenv
+@google/genai

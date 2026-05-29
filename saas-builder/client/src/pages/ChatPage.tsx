@@ -1,51 +1,117 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
 
-import type { Message } from "../../../shared/types/message";
+import type {
+  Message,
+} from "../../../shared/types/message";
 
-import MainLayout from "../layouts/MainLayout";
+import MainLayout
+  from "../layouts/MainLayout";
+
+import {
+  startConversation,
+} from "../services/chat.service";
 
 function ChatPage() {
 
-  const defaultMessage: Message[] = [
+  const [chatId] =
+    useState(
+      crypto.randomUUID()
+    );
 
-    {
-      role: "assistant",
-      content:
-        "Hi! I'm your AI SaaS consultant 🚀\nHow can I help you today?",
-    },
-  ];
-  const [chatId] = useState(
-    crypto.randomUUID()
-  );
-  const [messages, setMessages] =
-    useState<Message[]>(defaultMessage);
+  const [messages,
+    setMessages] =
+    useState<Message[]>([]);
 
-  const [isLoading, setIsLoading] =
+  const [isLoading,
+    setIsLoading] =
     useState(false);
+
+  /* -------------------------- */
+  /* START CONVERSATION */
+  /* -------------------------- */
 
   useEffect(() => {
 
-    localStorage.removeItem("saas-chat");
+    async function initChat() {
 
-    setMessages(defaultMessage);
+      try {
+
+        setIsLoading(true);
+
+        const response =
+          await startConversation();
+
+        setMessages([
+          {
+            role:
+              "assistant",
+
+            content:
+              response.reply,
+
+            step:
+              response.step,
+          },
+        ]);
+
+      } catch (error) {
+
+        console.log(error);
+
+        setMessages([
+          {
+            role:
+              "assistant",
+
+            content:
+              "Failed to start conversation.",
+          },
+        ]);
+      }
+
+      finally {
+
+        setIsLoading(false);
+      }
+    }
+
+    initChat();
 
   }, []);
+
+  /* -------------------------- */
+  /* SAVE CHAT */
+  /* -------------------------- */
 
   useEffect(() => {
 
     localStorage.setItem(
       "saas-chat",
-      JSON.stringify(messages)
+
+      JSON.stringify(
+        messages
+      )
     );
 
   }, [messages]);
 
   return (
+
     <MainLayout
+
       messages={messages}
+
       setMessages={setMessages}
+
       isLoading={isLoading}
-      setIsLoading={setIsLoading}
+
+      setIsLoading={
+        setIsLoading
+      }
+
       chatId={chatId}
     />
   );

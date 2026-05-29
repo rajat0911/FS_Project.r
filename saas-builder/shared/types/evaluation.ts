@@ -32,6 +32,22 @@ export type MetricDetails = {
   investor_perspective: string;
 
   recommended_changes: string[];
+
+  recommended_frontend: string;
+
+  recommended_backend: string;
+
+  recommended_ai_model: string;
+
+  recommended_database: string;
+
+  recommended_hosting: string;
+
+  estimated_monthly_cost: string;
+
+  cost_reduction_potential: string;
+
+  scalability_score: number;
 };
 
 export type StartupProjection = {

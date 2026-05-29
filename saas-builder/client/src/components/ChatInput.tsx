@@ -1,13 +1,13 @@
 import { useState } from "react";
 
-import { sendMessage }
-  from "../services/chat.service";
+import { sendMessage } from "../services/chat.service";
 
-import type { Message }
-  from "../../../shared/types/message";
+import type {
+  Message,
+  ConversationStep,
+} from "../../../shared/types/message";
 
-import { saveMessage }
-  from "../services/message.service";
+import { saveMessage } from "../services/message.service";
 
 type Props = {
   setMessages: React.Dispatch<
@@ -21,6 +21,8 @@ type Props = {
   >;
 
   chatId: string;
+
+  currentStep?: ConversationStep;
 };
 
 function ChatInput({
@@ -28,168 +30,397 @@ function ChatInput({
   isLoading,
   setIsLoading,
   chatId,
+  currentStep,
 }: Props) {
 
   const [input, setInput] =
     useState("");
 
+  const [
+    selectedOptions,
+    setSelectedOptions,
+  ] = useState<string[]>([]);
+
+  /* -------------------------------- */
+  /* OPTION SELECTION */
+  /* -------------------------------- */
+
+  const handleOptionSelect = (
+    option: string
+  ) => {
+
+    if (
+      currentStep?.inputType ===
+      "single_select"
+    ) {
+
+      setInput(option);
+
+      setTimeout(() => {
+
+        handleSendMessage(
+          option
+        );
+
+      }, 100);
+
+      return;
+    }
+
+    if (
+      currentStep?.inputType ===
+      "multi_select"
+    ) {
+
+      setSelectedOptions(
+        (prev) => {
+
+          if (
+            prev.includes(option)
+          ) {
+
+            return prev.filter(
+              (item) =>
+                item !== option
+            );
+          }
+
+          return [
+            ...prev,
+            option,
+          ];
+        }
+      );
+    }
+  };
+
+  /* -------------------------------- */
+  /* SEND MESSAGE */
+  /* -------------------------------- */
+
   const handleSendMessage =
-    async () => {
+    async (
+      manualInput?: string
+    ) => {
 
-      if (!input.trim()) return;
+      let finalMessage =
+        manualInput ||
+        input;
 
-      const userMessage = input;
+      if (
+        currentStep?.inputType ===
+        "multi_select" &&
+        selectedOptions.length >
+        0
+      ) {
+
+        finalMessage =
+          selectedOptions.join(
+            ", "
+          );
+      }
+
+      if (
+        !finalMessage.trim()
+      ) {
+        return;
+      }
 
       const currentTime =
         new Date().toLocaleTimeString(
           [],
           {
             hour: "2-digit",
-            minute: "2-digit",
+            minute:
+              "2-digit",
           }
         );
 
+      /* USER MESSAGE */
+
       setMessages((prev) => [
+
         ...prev,
+
         {
           role: "user",
-          content: userMessage,
-          timestamp: currentTime,
+
+          content:
+            finalMessage,
+
+          timestamp:
+            currentTime,
         },
       ]);
 
       setInput("");
 
+      setSelectedOptions([]);
+
       setIsLoading(true);
 
       try {
 
+        /* SAVE USER */
+
         await saveMessage({
-          chat_id: chatId,
 
-          role: "user",
+          chat_id:
+            chatId,
 
-          content: userMessage,
+          role:
+            "user",
 
-          timestamp: currentTime,
+          content:
+            finalMessage,
+
+          timestamp:
+            currentTime,
         });
 
+        /* AI REQUEST */
+
         const data =
-          await sendMessage(userMessage);
-        console.log("FRONTEND DATA:");
-        console.log(data);
-
-        console.log("REPLY TYPE:");
-        console.log(typeof data.reply);
-
-        console.log("REPLY:");
-        console.log(data.reply);
-
-        console.log(data.reply);
-
-        console.log(
-          typeof data.reply
-        );
+          await sendMessage(
+            finalMessage
+          );
 
         const assistantTime =
           new Date().toLocaleTimeString(
             [],
             {
-              hour: "2-digit",
-              minute: "2-digit",
+              hour:
+                "2-digit",
+
+              minute:
+                "2-digit",
             }
           );
 
+        /* ASSISTANT MESSAGE */
+
         setMessages((prev) => [
+
           ...prev,
+
           {
-            role: "assistant",
-            content: data.reply,
-            timestamp: assistantTime,
+            role:
+              "assistant",
+
+            content:
+              data.reply,
+
+            timestamp:
+              assistantTime,
+
+            step:
+              data.step,
           },
         ]);
 
+        /* SAVE ASSISTANT */
+
         await saveMessage({
-          chat_id: chatId,
 
-          role: "assistant",
+          chat_id:
+            chatId,
 
-          content: data.reply,
+          role:
+            "assistant",
 
-          timestamp: assistantTime,
+          content:
+            data.reply,
+
+          timestamp:
+            assistantTime,
         });
 
       } catch (error) {
 
-        console.error(error);
+        console.error(
+          error
+        );
 
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            content:
-              "⚠️ AI service is temporarily unavailable.",
+        setMessages(
+          (prev) => [
 
-            timestamp:
-              new Date().toLocaleTimeString(
-                [],
-                {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                }
-              ),
-          },
-        ]);
+            ...prev,
+
+            {
+              role:
+                "assistant",
+
+              content:
+                "⚠️ AI service temporarily unavailable.",
+
+              timestamp:
+                new Date().toLocaleTimeString(
+                  [],
+                  {
+                    hour:
+                      "2-digit",
+
+                    minute:
+                      "2-digit",
+                  }
+                ),
+            },
+          ]
+        );
 
       } finally {
 
-        setIsLoading(false);
+        setIsLoading(
+          false
+        );
       }
     };
 
   return (
     <div className="border-t border-slate-800 px-6 py-5 bg-slate-950">
 
-      <div className="max-w-4xl mx-auto flex gap-3">
+      <div className="max-w-4xl mx-auto w-full">
 
-        <input
-          type="text"
+        {currentStep?.options && (
 
-          value={input}
+          <div
+            className="
+              flex
+              flex-wrap
+              gap-3
+              mb-4
+            "
+          >
 
-          onChange={(e) =>
-            setInput(e.target.value)
-          }
+            {currentStep.options.map(
+              (option) => {
 
-          onKeyDown={(e) => {
-            if (
-              e.key === "Enter" &&
-              !isLoading
-            ) {
-              handleSendMessage();
+                const isSelected =
+                  selectedOptions.includes(
+                    option
+                  );
+
+                return (
+
+                  <button
+                    key={option}
+
+                    onClick={() =>
+                      handleOptionSelect(
+                        option
+                      )
+                    }
+
+                    className={`
+                      px-4
+                      py-2
+                      rounded-2xl
+                      border
+                      transition
+                      text-sm
+                      ${isSelected
+                        ? "bg-cyan-500 border-cyan-500 text-black"
+                        : "bg-slate-800 border-slate-700 hover:border-cyan-400 hover:bg-slate-700"
+                      }
+                    `}
+                  >
+
+                    {option}
+
+                  </button>
+                );
+              }
+            )}
+
+          </div>
+        )}
+
+        <div className="flex gap-3">
+
+          <input
+            type="text"
+
+            value={input}
+
+            onChange={(e) =>
+              setInput(
+                e.target.value
+              )
             }
-          }}
 
-          placeholder="Describe your SaaS idea..."
+            onKeyDown={(
+              e
+            ) => {
 
-          autoFocus
+              if (
+                e.key ===
+                "Enter" &&
+                !isLoading
+              ) {
 
-          className="flex-1 bg-slate-900 border border-slate-700 rounded-2xl px-4 py-4 outline-none focus:border-slate-500"
-        />
+                handleSendMessage();
+              }
+            }}
 
-        <button
-          disabled={
-            !input.trim() || isLoading
-          }
+            placeholder={
+              currentStep?.placeholder
+              || (
+                currentStep?.inputType === "text"
+                  ? "Type your answer..."
+                  : "Or type custom response..."
+              )
+            }
 
-          onClick={handleSendMessage}
+            autoFocus
 
-          className="bg-white text-black disabled:opacity-50 disabled:cursor-not-allowed px-6 rounded-2xl font-medium hover:bg-slate-200 transition"
-        >
-          {isLoading
-            ? "Thinking..."
-            : "Send"}
-        </button>
+            className="
+              flex-1
+              bg-slate-900
+              border
+              border-slate-700
+              rounded-2xl
+              px-4
+              py-4
+              outline-none
+              focus:border-slate-500
+            "
+          />
+
+          <button
+
+            disabled={
+              (
+                !input.trim() &&
+                selectedOptions.length ===
+                0
+              ) ||
+              isLoading
+            }
+
+            onClick={() =>
+              handleSendMessage()
+            }
+
+            className="
+              bg-white
+              text-black
+              disabled:opacity-50
+              disabled:cursor-not-allowed
+              px-6
+              rounded-2xl
+              font-medium
+              hover:bg-slate-200
+              transition
+            "
+          >
+
+            {isLoading
+              ? "Thinking..."
+              : "Send"}
+
+          </button>
+
+        </div>
 
       </div>
 

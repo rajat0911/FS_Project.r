@@ -41,123 +41,70 @@ const radarOptions = {
 
   maintainAspectRatio: false,
 
-  plugins: {
-    legend: {
-      labels: {
-        color: "#cbd5e1",
-
-        font: {
-          size: 14,
-        },
-      },
-    },
-  },
+  plugins: { legend: { labels: { color: "#cbd5e1", font: { size: 14, }, }, }, },
 
   scales: {
     r: {
-      angleLines: {
-        color: "#1e293b",
-      },
+      angleLines: { color: "#1e293b", },
 
-      grid: {
-        color: "#1e293b",
-      },
+      grid: { color: "#1e293b", },
+      pointLabels: { color: "#cbd5e1", },
 
-      pointLabels: {
-        color: "#cbd5e1",
-      },
-
-      ticks: {
-        color: "#94a3b8",
-
-        backdropColor:
-          "transparent",
-      },
+      ticks: { color: "#94a3b8", backdropColor: "transparent", },
     },
   },
 };
 
-type Props = {
-  title: string;
-  emoji: string;
-  metric: MetricDetails;
-};
+type Props = { title: string; emoji: string; metric: MetricDetails; };
 
 const chartOptions = {
-  responsive: true,
+  responsive: true, maintainAspectRatio: false,
 
-  maintainAspectRatio: false,
+  plugins: { legend: { labels: { color: "#cbd5e1", font: { size: 14, }, }, }, },
 
-  plugins: {
-    legend: {
-      labels: {
-        color: "#cbd5e1",
-        font: {
-          size: 14,
-        },
-      },
-    },
-  },
   scales: {
     r: {
-      angleLines: {
-        color: "#1e293b",
-      },
+      angleLines: { color: "#1e293b", },
 
-      grid: {
-        color: "#1e293b",
-      },
+      grid: { color: "#1e293b", },
+      pointLabels: { color: "#cbd5e1", },
 
-      pointLabels: {
-        color: "#cbd5e1",
-      },
-
-      ticks: {
-        color: "#94a3b8",
-        backdropColor: "transparent",
-      },
+      ticks: { color: "#94a3b8", backdropColor: "transparent", },
     },
   },
 };
 
+function MiniTechCard({ label, value, }: { label: string; value: string; }) {
 
-function MetricCard({
-  title,
-  emoji,
-  metric,
-}: Props) {
+  return (
+    <div className=" bg-slate-900 border border-slate-800 rounded-2xl p-4 " >
 
-const extractNumber = (
-  value: string
-) => {
+      <p className=" text-xs text-slate-500 " >
+        {label}
+      </p>
 
-  const match =
-    value.match(/\d+/);
-
-  return match
-    ? Number(match[0])
-    : 0;
-};
-
-const growth =
-  extractNumber(
-    metric.growth_if_optimized
+      <p className=" text-white font-semibold mt-2 break-words text-sm " >
+        {value}
+      </p>
+    </div>
   );
+}
 
-const revenue =
-  extractNumber(
-    metric.revenue_impact
-  );
+function MetricCard({ title, emoji, metric, }: Props) {
 
-const retention =
-  extractNumber(
-    metric.user_retention_impact
-  );
+  const extractNumber = (
+    value: string) => {
+      const match = value.match(/\d+/);
+    return match ? Number(match[0]) : 0;
+  };
 
-const conversion =
-  extractNumber(
-    metric.conversion_rate_impact
-  );
+  const growth = extractNumber(metric.growth_if_optimized);
+
+  const revenue = extractNumber(metric.revenue_impact);
+
+  const retention = extractNumber(metric.user_retention_impact);
+
+  const conversion = extractNumber(metric.conversion_rate_impact);
 
   const labels = [
     "Growth",
@@ -173,84 +120,67 @@ const conversion =
     conversion,
   ];
 
+  const isTechCard = title === "Tech Stack Analysis";
+
   return (
 
-    <div
-      className="
-        bg-slate-950
-        border border-slate-800
-        rounded-3xl
-        p-6
-        space-y-6
-        overflow-hidden
-      "
-    >
+    <div className=" bg-slate-950 border border-slate-800 rounded-3xl p-6 space-y-6 overflow-hidden " >
 
       {/* HEADER */}
       <div className="flex items-center justify-between">
 
         <h2 className="text-2xl font-bold text-white">
-
           {emoji} {title}
-
         </h2>
 
         <div className="text-right">
 
           <div className="text-4xl font-bold text-green-400">
-
             {metric.score.toFixed(1)}
-
           </div>
 
           <div className="text-slate-500 text-sm">
-
             /10
-
           </div>
 
         </div>
-
       </div>
 
       {/* SCORE BAR */}
       <ScoreBar score={metric.score} />
 
-      {/* KPI GRID */}
-      <div className="grid grid-cols-2 gap-4">
+      {/* TECH CARD */}
+      {isTechCard ? (
+        <div className=" grid grid-cols-2 md:grid-cols-4 gap-4 " >
 
-        <KPI
-          label="📈 Growth"
-          value={metric.growth_if_optimized}
-        />
+          <MiniTechCard label="Frontend" value={metric.recommended_frontend} />
 
-        <KPI
-          label="💰 Revenue"
-          value={metric.revenue_impact}
-        />
+          <MiniTechCard label="Backend" value={metric.recommended_backend} />
 
-        <KPI
-          label="👥 Retention"
-          value={metric.user_retention_impact}
-        />
+          <MiniTechCard label="AI Model" value={metric.recommended_ai_model} />
+          <MiniTechCard label="Database" value={metric.recommended_database} />
 
-        <KPI
-          label="🚀 Conversion"
-          value={metric.conversion_rate_impact}
-        />
+          <MiniTechCard label="Hosting" value={metric.recommended_hosting} />
+          <MiniTechCard label="Infra Cost" value={metric.estimated_monthly_cost} />
 
-      </div>
+          <MiniTechCard label="Cost Saving" value={metric.cost_reduction_potential} />
+
+          <MiniTechCard label="Scalability" value={`${metric.scalability_score}/10`} />
+        </div>
+      ) :
+        (<div className=" grid grid-cols-2 gap-4 " >
+          <KPI label="📈 Growth" value={metric.growth_if_optimized} />
+
+          <KPI label="💰 Revenue" value={metric.revenue_impact} />
+
+          <KPI label="👥 Retention" value={metric.user_retention_impact} />
+          <KPI label="🚀 Conversion" value={metric.conversion_rate_impact} />
+        </div>
+
+        )}
 
       {/* CHART AREA */}
-      <div
-        className="
-    h-72
-    bg-slate-900
-    border border-slate-800
-    rounded-3xl
-    p-4
-  "
-      >
+      <div className=" h-72 bg-slate-900 border border-slate-800 rounded-3xl p-4 " >
 
         {/* MARKET */}
         {title === "Market Potential" && (
@@ -261,29 +191,14 @@ const conversion =
               datasets: [
                 {
                   label: "Market Growth",
-                  data: values,
-
-                  borderColor: "#4ade80",
-
-                  backgroundColor:
-                    "rgba(74, 222, 128, 0.2)",
-
-                  borderWidth: 4,
-
-                  tension: 0.4,
-
-                  fill: true,
-
-                  pointRadius: 5,
-
-                  pointBackgroundColor:
-                    "#4ade80",
-                },
-              ],
+                  data: values, borderColor: "#4ade80",
+                  backgroundColor: "rgba(74, 222, 128, 0.2)",
+                  borderWidth: 4, tension: 0.4, fill: true, pointRadius: 5,
+                  pointBackgroundColor: "#4ade80",
+                },],
             }}
             options={chartOptions}
           />
-
         )}
 
         {/* AUDIENCE */}
@@ -292,24 +207,10 @@ const conversion =
           <Pie
             data={{
               labels,
-              datasets: [
-                {
-                  data: values,
-
-                  backgroundColor: [
-                    "#4ade80",
-                    "#38bdf8",
-                    "#c084fc",
-                    "#f59e0b",
-                  ],
-
-                  borderWidth: 0,
-                },
-              ],
+              datasets: [{ data: values, backgroundColor: ["#4ade80", "#38bdf8", "#c084fc", "#f59e0b",], borderWidth: 0, },],
             }}
             options={chartOptions}
           />
-
         )}
 
         {/* COMPETITION */}
@@ -318,28 +219,14 @@ const conversion =
           <Radar
             data={{
               labels,
-              datasets: [
-                {
-                  label: "Competitive Strength",
-
-                  data: values,
-
-                  backgroundColor:
-                    "rgba(56, 189, 248, 0.2)",
-
-                  borderColor: "#38bdf8",
-
-                  borderWidth: 3,
-
-                  pointBackgroundColor:
-                    "#38bdf8",
-                },
-              ],
+              datasets: [{
+                label: "Competitive Strength", data: values,
+                backgroundColor: "rgba(56, 189, 248, 0.2)", borderColor: "#38bdf8",
+                borderWidth: 3, pointBackgroundColor: "#38bdf8",
+              },],
             }}
-
             options={radarOptions}
           />
-
         )}
 
         {/* DEFAULT */}
@@ -350,73 +237,33 @@ const conversion =
             <Bar
               data={{
                 labels,
-                datasets: [
-                  {
-                    label: "Business Metrics",
-
-                    data: values,
-
-                    backgroundColor: [
-                      "#4ade80",
-                      "#38bdf8",
-                      "#c084fc",
-                      "#f59e0b",
-                    ],
-
-                    borderRadius: 12,
-                  },
-                ],
+                datasets: [{
+                  label: "Business Metrics", data: values,
+                  backgroundColor: ["#4ade80", "#38bdf8", "#c084fc", "#f59e0b",], borderRadius: 12,
+                },],
               }}
               options={chartOptions}
             />
-
           )}
 
       </div>
-
     </div>
   );
 }
 
 /* KPI */
 
-function KPI({
-  label,
-  value,
-}: {
-  label: string;
-  value: string;
-}) {
-
+function KPI({ label, value, }: { label: string; value: string; }) {
   return (
 
-    <div
-      className="
-        bg-slate-900
-        border border-slate-800
-        rounded-2xl
-        px-4
-        py-3
-      "
-    >
+    <div className=" bg-slate-900 border border-slate-800 rounded-2xl px-4 py-3 " >
 
       <div className="text-xs text-slate-400">
-
         {label}
-
       </div>
 
-      <div
-        className="
-          text-xl
-          font-bold
-          text-white
-          mt-1
-        "
-      >
-
+      <div className=" text-xl font-bold text-white mt-1 " >
         {value}
-
       </div>
 
     </div>

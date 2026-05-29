@@ -1,70 +1,33 @@
 import { Router } from "express";
 
+import {
+  getCurrentStep,
+  saveAnswer,
+  getNextStep,
+} from "../services/conversationEngine";
+
+import {
+  clearSession,
+} from "../services/sessionManager";
+
 import { GoogleGenAI }
   from "@google/genai";
 
-import metrics
-  from "../data/metrics";
 
 import EVALUATION_PROMPT
   from "../prompts/evaluationPrompt";
 
+import {
+  generateConversationalQuestion,
+} from "../services/aiConversationEngine";
+
 const router = Router();
 
-const ai = new GoogleGenAI({
-  apiKey:
-      process.env.GEMINI_API_KEY!,
-      });
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY!, });
 
-/* METRIC STATE */
 
-let currentQuestionIndex = 0;
-
-let interviewStarted = false;
-
-const metricKeys = [
-  "idea",
-  "launch_country",
-  "founder_country",
-  "target_age_group",
-  "tech_stack",
-] as const;
-
-let startupMetrics:
-  Record<string, string> = {
-
-  idea: "",
-
-  launch_country: "",
-
-  founder_country: "",
-
-  target_age_group: "",
-
-  tech_stack: "",
-};
 
 /* RESET */
-
-function resetConversation() {
-
-  currentQuestionIndex = 0;
-
-  interviewStarted = false;
-
-  startupMetrics = {
-
-    idea: "",
-
-    launch_country: "",
-
-    founder_country: "",
-
-    target_age_group: "",
-
-    tech_stack: "",
-  };
-}
 
 
 /* CHAT ROUTE */
@@ -75,214 +38,191 @@ router.post(
 
     try {
 
-      const { message } =
-        req.body;
+      const {
+        message,
+        sessionId,
+      } = req.body;
 
-      console.log(
-        "User Message:"
-      );
+      if (!sessionId) {
 
-      console.log(message);
+        return res.status(400).json({
+          reply:
+            "Missing sessionId",
+        });
+      }
 
       /* FIRST MESSAGE */
 
-      if (!interviewStarted) {
-
-        interviewStarted = true;
-
-        return res.json({
-          reply:
-            `Hi! I'm your AI SaaS Consultant 🚀
-
-I will analyze your startup idea,
-evaluate its market potential,
-technical feasibility, competition level, scalability, and business growth opportunities.
-
-Let's begin 👇
-
-${metrics[0]}`
-        });
-      }
-
-      /* STORE USER ANSWER */
-
-      const currentKey =
-        metricKeys[
-        currentQuestionIndex
-        ];
-
-      startupMetrics[
-        currentKey
-      ] = message;
-
-      console.log(
-        "UPDATED METRICS:"
-      );
-
-      console.log(
-        startupMetrics
-      );
-
-      /* ASK NEXT QUESTION */
-
       if (
-        currentQuestionIndex <
-        metrics.length - 1
+        !message ||
+        message.trim() === ""
       ) {
 
-        currentQuestionIndex++;
+        const firstStep =
+          getCurrentStep(
+            sessionId
+          );
 
         return res.json({
+
           reply:
-            metrics[
-            currentQuestionIndex
-            ],
+            firstStep.goal,
+
+          step:
+            firstStep,
         });
       }
 
-      /* FINAL AI EVALUATION */
+      /* SAVE ANSWER */
 
-      console.log(
-        "GENERATING AI EVALUATION..."
-      );
-
-      const response =
-        await ai.models.generateContent({
-
-          model:
-            "gemini-2.5-flash",
-
-          contents: `
-${EVALUATION_PROMPT}
-
-Analyze this SaaS startup deeply.
-
-STARTUP METRICS:
-
-${JSON.stringify(
-            startupMetrics,
-            null,
-            2
-          )}
-          `,
-        });
-
-      const rawText =
-        response.text || "{}";
-
-      console.log(
-        "RAW AI RESPONSE:"
-      );
-
-      console.log(rawText);
-
-      /* CLEAN RESPONSE */
-
-      const cleanedText =
-        rawText
-          .replace(
-            /```json/g,
-            ""
-          )
-          .replace(
-            /```/g,
-            ""
-          )
-          .replace(
-            /\n/g,
-            ""
-          )
-          .trim();
-
-      console.log(
-        "CLEANED RESPONSE:"
-      );
-
-      console.log(
-        cleanedText
-      );
-
-      /* PARSE JSON */
-
-      let parsedData;
-
-      try {
-
-        parsedData =
-          JSON.parse(
-            cleanedText
-          );
-        console.log("PARSED DATA TYPE:");
-        console.log(typeof parsedData);
-
-        console.log("PARSED DATA:");
-        console.log(parsedData);
-
-      } catch (
-      parseError
-      ) {
-
-        console.log(
-          "TYPE OF PARSED DATA:"
+      const result =
+        saveAnswer(
+          sessionId,
+          message
         );
 
-        console.log(typeof parsedData);
-
-        console.log(
-          "JSON PARSE ERROR:"
-        );
-
-        console.log(
-          parseError
-        );
+      if (!result) {
 
         return res.status(500).json({
           reply:
-            "Failed to parse AI evaluation JSON.",
+            "Failed to save answer.",
         });
       }
 
-      console.log(
-        "PARSED JSON:"
-      );
+      /* FLOW COMPLETED */
 
-      console.log(
-        parsedData
-      );
+      if (result.completed) {
 
-      resetConversation();
+        console.log(
+          "GENERATING AI EVALUATION..."
+        );
 
-            /* RETURN RESPONSE */
-      
+        const response =
+          await ai.models.generateContent({
+
+            model:
+              "gemini-2.5-flash",
+
+            contents: `
+
+${EVALUATION_PROMPT}
+
+Analyze this startup deeply.
+
+FOUNDER SESSION DATA:
+
+${JSON.stringify(
+              result.answers,
+              null,
+              2
+            )}
+
+`,
+          });
+
+        const rawText =
+          response.text || "{}";
+
+        const cleanedText =
+          rawText
+            .replace(
+              /```json/g,
+              ""
+            )
+            .replace(
+              /```/g,
+              ""
+            )
+            .trim();
+
+        let parsedData;
+
+        try {
+
+          parsedData =
+            JSON.parse(
+              cleanedText
+            );
+
+        } catch (
+        parseError
+        ) {
+
+          console.log(
+            parseError
+          );
+
+          return res.status(500).json({
+            reply:
+              "Failed to parse AI JSON.",
+          });
+        }
+
+        clearSession(
+          sessionId
+        );
+
+        return res.json({
+          reply:
+            parsedData,
+        });
+      }
+
+      /* NEXT QUESTION */
+
+      const nextStep =
+        getNextStep(
+          sessionId
+        );
+
+      const aiQuestion =
+        await generateConversationalQuestion(
+
+          nextStep,
+
+          result.answers,
+
+          message
+        );
+
       return res.json({
-        reply: {
-          ...parsedData
-        },
+
+        reply:
+          aiQuestion,
+
+        step:
+          nextStep,
       });
 
-    } catch (error: any) {
-
-      console.log(
-        "FULL ERROR:"
-      );
+    } catch (error) {
 
       console.log(error);
 
       return res.status(500).json({
+
         reply:
-          "Failed to generate SaaS evaluation.",
+          "Failed to process conversation.",
       });
     }
   }
 );
-/* RESET ROUTE */
 
+/* RESET ROUTE */
 
 router.post(
   "/reset",
   (req, res) => {
 
-    resetConversation();
+    const {
+      sessionId,
+    } = req.body;
+
+    if (sessionId) {
+
+      clearSession(
+        sessionId
+      );
+    }
 
     return res.json({
       success: true,

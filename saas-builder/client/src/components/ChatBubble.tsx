@@ -7,62 +7,32 @@ from "../../../shared/types/evaluation";
 import EvaluationDashboard
 from "./EvaluationDashboard";
 
-type Props = {
-  message: Message;
-};
+type Props = { message: Message; };
 
-function ChatBubble({
-  message,
-}: Props) {
+function ChatBubble({ message, }: Props) {
 
-  const isUser =
-    message.role === "user";
+  const isUser = message.role === "user";
 
-  const isReport =
-    typeof message.content === "object";
+  const isReport = typeof message.content === "object";
 
   return (
 
-    <div
-      className={`flex ${
-        isUser
-          ? "justify-end"
-          : "justify-start"
-      }`}
-    >
+    <div className={`flex ${ isUser ? "justify-end" : "justify-start" }`} >
 
-      <div
-        className={`max-w-6xl rounded-3xl px-6 py-5 ${
-          isUser
-            ? "bg-white text-black"
-            : "bg-slate-900 text-white"
-        }`}
-      >
+    <div className={`max-w-6xl rounded-3xl px-6 py-5 ${ isUser ? "bg-white text-black" : "bg-slate-900 text-white" }`} >
 
         {/* USER MESSAGE */}
         {typeof message.content === "string" && (
 
-          <p className="leading-8 whitespace-pre-wrap">
-
-            {message.content}
-
-          </p>
-
+          <p className="leading-8 whitespace-pre-wrap"> {message.content} </p>
         )}
 
         {/* AI REPORT */}
         {isReport && (
-
-          <EvaluationDashboard
-            report={
-              message.content as EvaluationReport
-            }
-          />
-
+          <EvaluationDashboard report={ message.content as EvaluationReport } />
         )}
 
       </div>
-
     </div>
   );
 }
