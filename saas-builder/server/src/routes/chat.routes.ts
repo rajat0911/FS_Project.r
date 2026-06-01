@@ -1,10 +1,11 @@
 import { Router } from "express";
 
 import {
-  getCurrentStep,
-  saveAnswer,
-  getNextStep,
-} from "../services/conversationEngine";
+  saveFounderSession,
+}
+  from "../services/founderSessionService";
+
+import { getCurrentStep, saveAnswer, getNextStep, } from "../services/conversationEngine";
 
 import {
   clearSession,
@@ -25,11 +26,6 @@ const router = Router();
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY!, });
 
-
-
-/* RESET */
-
-
 /* CHAT ROUTE */
 
 router.post(
@@ -37,14 +33,9 @@ router.post(
   async (req, res) => {
 
     try {
-
-      const {
-        message,
-        sessionId,
-      } = req.body;
+      const { message, sessionId, } = req.body;
 
       if (!sessionId) {
-
         return res.status(400).json({
           reply:
             "Missing sessionId",
@@ -53,36 +44,20 @@ router.post(
 
       /* FIRST MESSAGE */
 
-      if (
-        !message ||
-        message.trim() === ""
-      ) {
+      if (!message || message.trim() === "") {
 
-        const firstStep =
-          getCurrentStep(
-            sessionId
-          );
+        const firstStep = getCurrentStep(sessionId);
 
         return res.json({
-
-          reply:
-            firstStep.goal,
-
-          step:
-            firstStep,
+          reply: firstStep.goal, step: firstStep,
         });
       }
 
       /* SAVE ANSWER */
 
-      const result =
-        saveAnswer(
-          sessionId,
-          message
-        );
+      const result = saveAnswer(sessionId, message);
 
       if (!result) {
-
         return res.status(500).json({
           reply:
             "Failed to save answer.",
@@ -90,116 +65,62 @@ router.post(
       }
 
       /* FLOW COMPLETED */
+      console.log("CONVERSATION COMPLETE");
+      console.log(result.answers);
+      /* FLOW COMPLETED */
 
       if (result.completed) {
-
-        console.log(
-          "GENERATING AI EVALUATION..."
+        console.log("GENERATING AI EVALUATION...");
+        await saveFounderSession(
+          sessionId,
+          result.answers,
+          null
         );
+        const response = await ai.models.generateContent({
+          model: "gemini-2.5-flash", contents: `
 
-        const response =
-          await ai.models.generateContent({
+      ${EVALUATION_PROMPT} Analyze this startup deeply. FOUNDER SESSION DATA:
+      ${JSON.stringify(result.answers, null, 2)} `,
+        });
 
-            model:
-              "gemini-2.5-flash",
+        const rawText = response.text || "{}";
 
-            contents: `
-
-${EVALUATION_PROMPT}
-
-Analyze this startup deeply.
-
-FOUNDER SESSION DATA:
-
-${JSON.stringify(
-              result.answers,
-              null,
-              2
-            )}
-
-`,
-          });
-
-        const rawText =
-          response.text || "{}";
-
-        const cleanedText =
-          rawText
-            .replace(
-              /```json/g,
-              ""
-            )
-            .replace(
-              /```/g,
-              ""
-            )
-            .trim();
+        const cleanedText = rawText.replace(/```json/g, "").replace(/```/g, "").trim();
 
         let parsedData;
-
         try {
+          parsedData = JSON.parse(cleanedText);
 
-          parsedData =
-            JSON.parse(
-              cleanedText
-            );
+          console.log("SAVE FOUNDER SESSION CALLED");
 
-        } catch (
-        parseError
-        ) {
+          // await saveFounderSession(sessionId, result.answers, parsedData);
+        }
 
-          console.log(
-            parseError
-          );
-
+        catch (parseError) {
+          console.log(parseError);
           return res.status(500).json({
             reply:
               "Failed to parse AI JSON.",
           });
         }
-
-        clearSession(
-          sessionId
-        );
-
-        return res.json({
-          reply:
-            parsedData,
-        });
+        clearSession(sessionId);
+        return res.json({ reply: parsedData, });
       }
 
       /* NEXT QUESTION */
 
-      const nextStep =
-        getNextStep(
-          sessionId
-        );
+      const nextStep = getNextStep(sessionId);
 
       const aiQuestion =
-        await generateConversationalQuestion(
+        await generateConversationalQuestion(nextStep, result.answers, message);
 
-          nextStep,
+      return res.json({ reply: aiQuestion, step: nextStep, });
+    }
 
-          result.answers,
-
-          message
-        );
-
-      return res.json({
-
-        reply:
-          aiQuestion,
-
-        step:
-          nextStep,
-      });
-
-    } catch (error) {
+    catch (error) {
 
       console.log(error);
-
       return res.status(500).json({
-
         reply:
           "Failed to process conversation.",
       });
@@ -209,25 +130,13 @@ ${JSON.stringify(
 
 /* RESET ROUTE */
 
-router.post(
-  "/reset",
-  (req, res) => {
-
-    const {
-      sessionId,
-    } = req.body;
-
-    if (sessionId) {
-
-      clearSession(
-        sessionId
-      );
-    }
-
-    return res.json({
-      success: true,
-    });
+router.post("/reset", (req, res) => {
+  const { sessionId, } = req.body;
+  if (sessionId) {
+    clearSession(sessionId);
   }
+  return res.json({ success: true, });
+}
 );
 
 export default router;

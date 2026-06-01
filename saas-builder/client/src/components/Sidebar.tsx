@@ -1,13 +1,13 @@
 import { useState } from "react";
 
-import { resetChat }
-from "../services/chat.service";
+// import { resetChat }
+// from "../services/chat.service";
 
 function Sidebar() {
 
   const [ isCollapsed, setIsCollapsed, ] = useState(false);
 
-  const handleNewChat = async () => { await resetChat(); window.location.reload(); };
+  // const handleNewChat = async () => { await resetChat(); window.location.reload(); };
 
   return (
     <div className={` border-r border-slate-800 p-4 flex flex-col transition-all duration-200 ${isCollapsed ? "w-20" : "w-72"} `} >
@@ -43,11 +43,11 @@ function Sidebar() {
       </div>
 
       {/* NEW CHAT */}
-      <button onClick={handleNewChat} 
+      {/* <button onClick={handleNewChat} 
       className=" bg-white text-black rounded-xl px-4 py-3 font-medium hover:bg-slate-200 transition mb-4 " >
 
         {isCollapsed ? "+" : "+ New Chat"}
-      </button>
+      </button> */}
     </div>
   );
 }

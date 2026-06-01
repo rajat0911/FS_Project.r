@@ -11,7 +11,7 @@ import MainLayout
   from "../layouts/MainLayout";
 
 import {
-  startConversation,
+  resetAndStartConversation,
 } from "../services/chat.service";
 
 function ChatPage() {
@@ -42,7 +42,7 @@ function ChatPage() {
         setIsLoading(true);
 
         const response =
-          await startConversation();
+          await resetAndStartConversation();
 
         setMessages([
           {
