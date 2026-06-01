@@ -3,6 +3,21 @@ const SESSION_KEY =
 
 /* -------------------------- */
 
+function createNewSession() {
+
+  const sessionId =
+    crypto.randomUUID();
+
+  localStorage.setItem(
+    SESSION_KEY,
+    sessionId
+  );
+
+  return sessionId;
+}
+
+/* -------------------------- */
+
 function getSessionId() {
 
   let sessionId =
@@ -13,12 +28,7 @@ function getSessionId() {
   if (!sessionId) {
 
     sessionId =
-      crypto.randomUUID();
-
-    localStorage.setItem(
-      SESSION_KEY,
-      sessionId
-    );
+      createNewSession();
   }
 
   return sessionId;
@@ -37,7 +47,6 @@ export async function sendMessage(
     await fetch(
       "/chat",
       {
-
         method: "POST",
 
         headers: {
@@ -46,18 +55,13 @@ export async function sendMessage(
         },
 
         body: JSON.stringify({
-
           message,
-
           sessionId,
         }),
       }
     );
 
-  const data =
-    await response.json();
-
-  return data;
+  return await response.json();
 }
 
 /* -------------------------- */
@@ -71,7 +75,6 @@ export async function startConversation() {
     await fetch(
       "/chat",
       {
-
         method: "POST",
 
         headers: {
@@ -80,18 +83,13 @@ export async function startConversation() {
         },
 
         body: JSON.stringify({
-
           message: "",
-
           sessionId,
         }),
       }
     );
 
-  const data =
-    await response.json();
-
-  return data;
+  return await response.json();
 }
 
 /* -------------------------- */
@@ -104,7 +102,6 @@ export async function resetChat() {
   await fetch(
     "/chat/reset",
     {
-
       method: "POST",
 
       headers: {
@@ -121,4 +118,15 @@ export async function resetChat() {
   localStorage.removeItem(
     SESSION_KEY
   );
+}
+
+/* -------------------------- */
+
+export async function resetAndStartConversation() {
+
+  await resetChat();
+
+  createNewSession();
+
+  return await startConversation();
 }
