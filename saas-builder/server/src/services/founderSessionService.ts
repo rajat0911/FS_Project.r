@@ -1,120 +1,64 @@
 import { supabase } from "../config/supabase";
 console.log( "SUPABASE URL:", process.env.SUPABASE_URL );
 
-export async function saveFounderSession(
-  sessionId: string,
-  answers: Record<string, any>,
-  report: any
-) {
+export async function saveFounderSession( sessionId: string, answers: Record<string, any>, report: any ) {
   console.log("SAVE FOUNDER SESSION STARTED");
   console.log("SESSION ID:", sessionId);
   console.log("ANSWERS:", answers);
 
-  const contact =
-    answers.founder_name || "";
+  const contact = answers.founder_name || "";
 
   let founder_name = "";
   let founder_email = "";
 
-  const emailMatch =
-    contact.match(
-      /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/
-    );
+  const emailMatch = contact.match( /([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})/ );
+  
+  if (emailMatch) { founder_email = emailMatch[0];
 
-  if (emailMatch) {
-
-    founder_email =
-      emailMatch[0];
-
-    founder_name =
-      contact
-        .replace(
-          founder_email,
-          ""
-        )
-        .replace(",", "")
-        .trim();
-
-  } else {
-
-    founder_name =
-      contact.trim();
-  }
+    founder_name = contact .replace( founder_email, "" )
+        .replace(",", "") .trim(); } 
+        else { founder_name = contact.trim(); }
 
   const { data, error } =
-    await supabase
-      .from("founder_sessions")
-      .insert([{
-        session_id: sessionId,
+    await supabase .from("founder_sessions") .insert([{ session_id: sessionId,
 
-        founder_name,
-        founder_email,
+        founder_name, founder_email,
+        founder_phone: answers.founder_phone,
 
-        founder_phone:
-          answers.founder_phone,
+        founder_city: answers.founder_city,
 
-        founder_city:
-          answers.founder_city,
+        founder_country: answers.founder_country,
+        idea_raw_description: answers.idea_raw_description,
 
-        founder_country:
-          answers.founder_country,
+        idea_motivation: answers.idea_motivation,
 
-        idea_raw_description:
-          answers.idea_raw_description,
+        idea_type: answers.idea_type,
 
-        idea_motivation:
-          answers.idea_motivation,
+        business_stage: answers.business_stage,
 
-        idea_type:
-          answers.idea_type,
+        launch_city: answers.launch_city,
 
-        business_stage:
-          answers.business_stage,
+        launch_country: answers.launch_country,
 
-        launch_city:
-          answers.launch_city,
+        existing_businesses_count: answers.existing_businesses_count,
 
-        launch_country:
-          answers.launch_country,
+        existing_businesses_description: answers.existing_businesses_description,
 
-        existing_businesses_count:
-          answers.existing_businesses_count,
+        platform_preference: JSON.stringify( answers.platform_preference ),
+        revenue_model: JSON.stringify( answers.revenue_model ),
 
-        existing_businesses_description:
-          answers.existing_businesses_description,
+        requires_ai: answers.requires_ai,
+        ai_usecase_description: answers.ai_usecase_description,
+        
+        target_generation: JSON.stringify( answers.target_generation ),
 
-        platform_preference:
-          JSON.stringify(
-            answers.platform_preference
-          ),
+        target_age_range: answers.target_age_range,
 
-        revenue_model:
-          JSON.stringify(
-            answers.revenue_model
-          ),
+        target_gender: answers.target_gender,
 
-        requires_ai:
-          answers.requires_ai,
+        overall_score: report?.overall_score ?? null,
 
-        ai_usecase_description:
-          answers.ai_usecase_description,
-
-        target_generation:
-          JSON.stringify(
-            answers.target_generation
-          ),
-
-        target_age_range:
-          answers.target_age_range,
-
-        target_gender:
-          answers.target_gender,
-
-        overall_score:
-          report?.overall_score ?? null,
-
-        report: report ?? null,
-      }]).select();
+        report: report ?? null, }]).select();
 
   console.log("INSERT DATA:");
   console.log(data);
@@ -122,12 +66,7 @@ export async function saveFounderSession(
   console.log("INSERT ERROR:");
   console.log(error);
 
-  if (error) {
-
-    console.log(
-      "FOUNDER SAVE ERROR"
-    );
-
-    console.log(error);
-  }
+  if (error) { 
+    console.log( "FOUNDER SAVE ERROR" ); 
+    console.log(error); }
 }

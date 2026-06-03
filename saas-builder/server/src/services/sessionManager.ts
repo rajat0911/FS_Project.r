@@ -14,19 +14,15 @@ export type SessionState = {
   updatedAt: number;
 };
 
-/* ---------------------------- */
+/* ------- */
 
-const sessions =
-  new Map<string, SessionState>();
+const sessions = new Map<string, SessionState>();
 
-/* ---------------------------- */
+/* ------- */
 
-export function createSession(
-  sessionId: string
-): SessionState {
+export function createSession( sessionId: string ): SessionState {
 
   const newSession: SessionState = {
-
     sessionId,
 
     currentStepIndex: 0,
@@ -42,69 +38,39 @@ export function createSession(
     updatedAt: Date.now(),
   };
 
-  sessions.set(
-    sessionId,
-    newSession
-  );
-
+  sessions.set( sessionId, newSession );
   return newSession;
 }
 
-/* ---------------------------- */
+/* ------- */
 
-export function getSession(
-  sessionId: string
-): SessionState {
+export function getSession( sessionId: string ): SessionState {
 
-  let session =
-    sessions.get(sessionId);
+  let session = sessions.get(sessionId);
 
   if (!session) {
-
-    session =
-      createSession(
-        sessionId
-      );
+    session = createSession( sessionId );
   }
-
   return session;
 }
 
-/* ---------------------------- */
+/* ------- */
 
-export function updateSession(
-  sessionId: string,
-
+export function updateSession( sessionId: string,
   updates: Partial<SessionState>
 ) {
 
-  const session =
-    getSession(sessionId);
+  const session = getSession(sessionId);
 
-  const updatedSession = {
+  const updatedSession = { ...session, ...updates, updatedAt: Date.now(), };
 
-    ...session,
-
-    ...updates,
-
-    updatedAt: Date.now(),
-  };
-
-  sessions.set(
-    sessionId,
-    updatedSession
-  );
+  sessions.set( sessionId, updatedSession );
 
   return updatedSession;
 }
 
-/* ---------------------------- */
+/* ----- */
 
-export function clearSession(
-  sessionId: string
-) {
-
-  sessions.delete(
-    sessionId
-  );
+export function clearSession( sessionId: string ) {
+  sessions.delete( sessionId );
 }

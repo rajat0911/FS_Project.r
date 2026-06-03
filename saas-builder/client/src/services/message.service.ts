@@ -5,14 +5,12 @@ export async function saveMessage(
     content: string;
     timestamp: string;
   }
-) {
-
-  const response = await fetch(
-    "/message/save",
+) 
+{
+  const response = await fetch( "/message/save",
     {
       method: "POST",
       headers: { "Content-Type": "application/json", },
-
       body: JSON.stringify( messageData ),
     }
   );

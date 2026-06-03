@@ -1,35 +1,20 @@
 export type ConversationStep = {
   id: string;
-
   phase: number;
-
   field: string;
-
   goal: string;
 
-  inputType:
-    | "text"
-    | "single_select"
-    | "multi_select";
-
+  inputType: | "text" | "single_select" | "multi_select";
   options?: string[];
-
   required?: boolean;
 
-  condition?: (
-    answers: Record<string, any>
-  ) => boolean;
-
+  condition?: ( answers: Record<string, any> ) => boolean;
   placeholder?: string;
 };
 
-/* ------------------------------------------------ */
-
 export const conversationFlow: ConversationStep[] = [
 
-  /* ================================================= */
   /* PHASE 1 — IDEA DISCOVERY */
-  /* ================================================= */
 
   {
     id: "idea_raw_description",
@@ -50,9 +35,7 @@ export const conversationFlow: ConversationStep[] = [
     inputType: "text",
   },
 
-  /* ================================================= */
   /* PHASE 2 — IDEA DISCOVERY */
-  /* ================================================= */
 
   {
     id: "idea_type",
@@ -104,9 +87,7 @@ export const conversationFlow: ConversationStep[] = [
     placeholder:"India...",
   },
 
-  /* ================================================= */
   /* PHASE 3 — BUSINESS CONTEXT */
-  /* ================================================= */
 
   {
     id: "existing_businesses_count",
@@ -153,9 +134,8 @@ export const conversationFlow: ConversationStep[] = [
     ],
   },
 
-  /* ================================================= */
+
   /* PHASE 4 — MARKET & MODEL */
-  /* ================================================= */
 
   {
     id: "revenue_model",
@@ -245,9 +225,7 @@ export const conversationFlow: ConversationStep[] = [
     ],
   },
 
-  /* ================================================= */
   /* PHASE 5 — CONTACT CAPTURE */
-  /* ================================================= */
 
   {
     id: "founder_name",

@@ -1,9 +1,6 @@
-import {
-  ConversationStep,
-} from "../../../shared/types/message";
+import { ConversationStep, } from "../../../shared/types/message";
 
-/* ---------------------------------- */
-
+/* ------------------ */
 export async function generateConversationalQuestion(
   step: ConversationStep
 ) {

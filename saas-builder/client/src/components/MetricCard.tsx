@@ -1,15 +1,8 @@
-import type {
-  MetricDetails,
-} from "../../../shared/types/evaluation";
+import type { MetricDetails, } from "../../../shared/types/evaluation";
 
 import ScoreBar from "./ScoreBar";
 
-import {
-  Bar,
-  Pie,
-  Line,
-  Radar,
-} from "react-chartjs-2";
+import { Bar, Pie, Line, Radar, } from "react-chartjs-2";
 
 import {
   Chart as ChartJS,
@@ -106,19 +99,9 @@ function MetricCard({ title, emoji, metric, }: Props) {
 
   const conversion = extractNumber(metric.conversion_rate_impact);
 
-  const labels = [
-    "Growth",
-    "Revenue",
-    "Retention",
-    "Conversion",
-  ];
+  const labels = [ "Growth", "Revenue", "Retention", "Conversion", ];
 
-  const values = [
-    growth,
-    revenue,
-    retention,
-    conversion,
-  ];
+  const values = [ growth, revenue, retention, conversion, ];
 
   const isTechCard = title === "Tech Stack Analysis";
 
