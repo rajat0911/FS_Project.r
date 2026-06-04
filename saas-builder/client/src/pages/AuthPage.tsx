@@ -30,9 +30,17 @@ function AuthPage() {
 
     return (
 
-        <div className=" min-h-screen bg-slate-950 text-white flex items-center justify-center px-6 " >
+        <div className=" min-h-screen relative overflow-hidden text-white flex items-center justify-center px-6 " >
 
-            <div className=" w-full max-w-6xl grid lg:grid-cols-2 gap-12 items-center " >
+            {/* Glow 1 */}
+
+            <div className=" absolute top-0 left-0 h-[500px] w-[500px] rounded-full bg-cyan-500/10 blur-3xl " />
+
+            {/* Glow 2 */}
+
+            <div className=" absolute bottom-0 right-0 h-[500px] w-[500px] rounded-full bg-blue-500/10 blur-3xl " />
+
+            <div className=" w-full max-w-6xl grid lg:grid-cols-2 gap-12 items-center relative z-10 " >
 
                 {/* LEFT SIDE */}
 
@@ -127,8 +135,8 @@ function AuthPage() {
                         </div>
                         )}
 
-                        <button type="submit" 
-                        className=" w-full bg-cyan-500 hover:bg-cyan-400 transition py-4 rounded-xl font-semibold text-black " >
+                        <button type="submit"
+                            className=" w-full bg-cyan-500 hover:bg-cyan-400 transition py-4 rounded-xl font-semibold text-black " >
                             {isLogin ? "Login" : "Create Account"}
                         </button>
 
@@ -136,7 +144,7 @@ function AuthPage() {
                     <div className=" text-center mt-6 " >
                         <button
                             type="button"
-                            onClick={() => setIsLogin( !isLogin ) }
+                            onClick={() => setIsLogin(!isLogin)}
                             className=" text-cyan-400 hover:text-cyan-300 transition " >
                             {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Login"}
                         </button>
