@@ -101,13 +101,9 @@ function ChatMessages({ messages, isLoading, isGeneratingReport, }: Props) {
 
   const bottomRef = useAutoScroll(messages);
   return (
-    <div className="flex-1 overflow-y-auto px-6 py-8">
+    <div className="flex-1 overflow-y-auto px-6 py-4">
 
-      <div className="max-w-4xl mx-auto space-y-6">
-
-        <div className="text-center text-xs text-slate-500">
-          AI SaaS Consultation Session
-        </div>
+      <div className="max-w-4xl mx-auto space-y-4">
         {messages.map((message, index) => (<ChatBubble key={index} message={message}
         />)
         )}

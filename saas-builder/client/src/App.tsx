@@ -1,12 +1,29 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 
 import ChatPage from "./pages/ChatPage";
+
 import AuthPage from "./pages/AuthPage";
 
-import { getCurrentUser } from "./services/auth.service";
+import DashboardPage from "./pages/DashboardPage";
 
-import { supabase }
-from "./lib/supabase";
+import ProfilePage from "./pages/ProfilePage";
+
+import {
+  getCurrentUser,
+} from "./services/auth.service";
+
+import {
+  supabase,
+} from "./lib/supabase";
 
 function App() {
 
@@ -23,7 +40,9 @@ function App() {
       const currentUser =
         await getCurrentUser();
 
-      setUser(currentUser);
+      setUser(
+        currentUser
+      );
 
       setLoading(false);
     }
@@ -32,21 +51,27 @@ function App() {
 
     const {
       data: authListener,
-    } = supabase.auth.onAuthStateChange(
+    } =
+      supabase.auth.onAuthStateChange(
 
-      async (_event, session) => {
+        async (
+          _event,
+          session
+        ) => {
 
-        setUser(
-          session?.user ?? null
-        );
+          setUser(
+            session?.user ?? null
+          );
 
-        setLoading(false);
-      }
-    );
+          setLoading(false);
+        }
+      );
 
     return () => {
 
-      authListener.subscription.unsubscribe();
+      authListener
+        .subscription
+        .unsubscribe();
     };
 
   }, []);
@@ -58,16 +83,13 @@ function App() {
       <div
         className="
         min-h-screen
-        bg-slate-950
-        text-white
         flex
         items-center
         justify-center
+        text-white
         "
       >
-
         Loading...
-
       </div>
 
     );
@@ -78,7 +100,40 @@ function App() {
     return <AuthPage />;
   }
 
-  return <ChatPage />;
+  return (
+
+    <Routes>
+
+      <Route
+        path="/"
+        element={
+          <DashboardPage />
+        }
+      />
+
+      <Route
+        path="/chat"
+        element={
+          <ChatPage />
+        }
+      />
+
+      <Route
+        path="/profile"
+        element={
+          <ProfilePage />
+        }
+      />
+
+      <Route
+        path="*"
+        element={
+          <Navigate to="/" />
+        }
+      />
+
+    </Routes>
+  );
 }
 
 export default App;

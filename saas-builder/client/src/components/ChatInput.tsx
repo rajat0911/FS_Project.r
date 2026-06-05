@@ -63,11 +63,8 @@ function ChatInput({ setMessages, isLoading, setIsLoading, setIsGeneratingReport
     {
       role: "user",
 
-      content:
-        finalMessage,
-
-      timestamp:
-        currentTime,
+      content: finalMessage,
+      timestamp: currentTime,
     },
     ]);
 
@@ -140,18 +137,15 @@ function ChatInput({ setMessages, isLoading, setIsLoading, setIsGeneratingReport
       ]
       );
 
-    } finally {
-      setIsLoading(false);
-      setIsGeneratingReport(false);
-    }
+    } finally { setIsLoading(false); setIsGeneratingReport(false); }
   };
 
   return (
-    <div className="border-t border-slate-800 px-6 py-5 bg-slate-950">
+    <div className="px-6 py-5">
       <div className="max-w-4xl mx-auto w-full">
 
         {currentStep?.options && (
-          <div className=" flex flex-wrap gap-3 mb-4 " >
+          <div className="flex flex-wrap gap-3 mb-4 " >
 
             {currentStep.options.map((option) => {
 
@@ -173,21 +167,35 @@ function ChatInput({ setMessages, isLoading, setIsLoading, setIsGeneratingReport
         )}
 
         <div className="flex gap-3">
-          <input type="text" value={input} onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter" && !isLoading) { handleSendMessage(); } }}
-            placeholder={
-              currentStep?.placeholder || ( currentStep?.inputType === "text" ? "Type your answer..." : "Or type custom response..." )
-            }
-            autoFocus
-            className=" flex-1 bg-slate-900 border border-slate-700 rounded-2xl px-4 py-4 outline-none focus:border-slate-500 " />
-          
-          <button
-            disabled={ ( !input.trim() && selectedOptions.length === 0 ) || isLoading }
-            onClick={() => handleSendMessage() }
+          <div className=" flex items-center bg-slate-900/80 border border-slate-700 rounded-3xl px-5 py-3 backdrop-blur-sm " >
 
-            className=" bg-white text-black disabled:opacity-50 disabled:cursor-not-allowed px-6 rounded-2xl font-medium hover:bg-slate-200 transition " >
-            {isLoading ? "Thinking..." : "Send"}
-          </button>
+            <input type="text" value={input} onChange={(e) => setInput(e.target.value) }
+              onKeyDown={(e) => {
+                if (
+                  e.key === "Enter" &&
+                  !isLoading
+                ) {
+                  handleSendMessage();
+                }
+              }}
+              placeholder={
+                currentStep?.placeholder ||
+                (
+                  currentStep?.inputType === "text"
+                    ? "Describe your startup idea..."
+                    : "Type your response..."
+                )
+              }
+              autoFocus
+              className=" flex-1 bg-transparent outline-none text-white placeholder:text-slate-500 px-2 " />
+
+            <button
+              disabled={ ( !input.trim() && selectedOptions.length === 0 ) || isLoading }
+              onClick={() => handleSendMessage() }
+              className=" h-10 w-10 rounded-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center " >
+              {isLoading ? "..." : "➜"}
+            </button>
+          </div>
         </div>
       </div>
     </div>

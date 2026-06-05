@@ -21,7 +21,7 @@ export const conversationFlow: ConversationStep[] = [
     phase: 1,
     field: "idea_raw_description",
     goal:
-      "Hey there 👋 I'm Spark, your idea co-pilot. I've helped hundreds of founders stress-test, shape, and launch their ideas. Tell me, what's been living rent-free in your head lately? An idea, a problem you want to solve, or something you've already started?",
+      "  Hi, I'm Spark What startup idea are you exploring?",
     inputType: "text",
     required: true,
   },

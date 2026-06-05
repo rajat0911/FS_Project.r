@@ -34,11 +34,11 @@ function AuthPage() {
 
             {/* Glow 1 */}
 
-            <div className=" absolute top-0 left-0 h-[500px] w-[500px] rounded-full bg-cyan-500/10 blur-3xl " />
+            <div className=" absolute top-0 left-0 h-[500px] w-[500px] rounded-full bg-cyan-200/5 blur-3xl " />
 
             {/* Glow 2 */}
 
-            <div className=" absolute bottom-0 right-0 h-[500px] w-[500px] rounded-full bg-blue-500/10 blur-3xl " />
+            <div className=" absolute bottom-0 right-0 h-[500px] w-[500px] rounded-full bg-blue-200/10 blur-3xl " />
 
             <div className=" w-full max-w-6xl grid lg:grid-cols-2 gap-12 items-center relative z-10 " >
 
