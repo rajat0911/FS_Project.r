@@ -7,7 +7,7 @@ export async function saveMessage(
   }
 ) 
 {
-  const response = await fetch( "/message/save",
+  const response = await fetch( "/api/message/save",
     {
       method: "POST",
       headers: { "Content-Type": "application/json", },

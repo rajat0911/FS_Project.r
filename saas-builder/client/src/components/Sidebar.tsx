@@ -14,286 +14,101 @@ function Sidebar() {
 
   const [userEmail, setUserEmail,] = useState("");
   useEffect(() => {
-
-    async function loadUser() {
-      const user = await getCurrentUser();
-      if (user?.email) { setUserEmail(user.email); }
-    }
-    loadUser();
+    async function loadUser() { const user = await getCurrentUser(); if (user?.email) { setUserEmail(user.email); } } loadUser();
   },
     []);
 
   async function handleLogout() {
 
-    try {
-
-      await signOut();
-
-      navigate("/");
-
-    }
-
-    catch (error) {
-
-      console.log(error);
-    }
+    try { await signOut(); navigate("/"); }
+    catch (error) { console.log(error); }
   }
 
   return (
     <div
-      className={`
-  flex
-  flex-col
-  transition-all
-  duration-300
-  ${isCollapsed
-          ? "w-20 bg-transparent"
-          : "w-72 bg-slate-950 border-r border-slate-800"
-        }
-  `}
-    >
+      className={` flex flex-col transition-all duration-300 
+    ${isCollapsed ? "w-20 bg-transparent" : "w-72 bg-slate-950 border-r border-slate-800"} `} >
       {/* HEADER */}
 
-      <div
-        className="p-4"
-        onMouseEnter={() =>
-          setShowExpandButton(true)
-        }
-        onMouseLeave={() =>
-          setShowExpandButton(false)
-        }
-      >
+      <div className="p-4" onMouseEnter={() => setShowExpandButton(true)} onMouseLeave={() => setShowExpandButton(false)} >
 
         <div className="flex items-center justify-between">
-
           <div className="relative flex items-center gap-3">
-
-            <div
-              className="
-        h-12
-        w-12
-        rounded-xl
-        bg-white
-        flex
-        items-center
-        justify-center
-        overflow-hidden
-        "
-            >
-
-              <img
-                src="/new_Log.png"
-                alt="Logo"
-                className="h-10 w-10 object-contain"
-              />
-
+            <div className=" h-12 w-12 rounded-xl bg-white flex items-center justify-center overflow-hidden " >
+              <img src="/new_Log.png" alt="Logo" className="h-10 w-10 object-contain" />
             </div>
 
             {!isCollapsed && (
 
               <div>
-
                 <h1 className="text-lg font-bold text-white">
                   AI SaaS Consultant
                 </h1>
-
                 <p className="text-xs text-slate-400">
                   Build smarter SaaS ideas
                 </p>
-
               </div>
-
             )}
 
             {isCollapsed && (
 
-              <button
-                onClick={() =>
-                  setIsCollapsed(false)
-                }
-                className={`
-          absolute
-          left-0
-          top-0
-          h-12
-          w-12
-          rounded-xl
-          bg-slate-900/90
-          border
-          border-slate-700
-          transition-all
-          duration-300
-          ${showExpandButton
-                    ? "opacity-100"
-                    : "opacity-0 pointer-events-none"
-                  }
-          `}
-              >
+              <button onClick={() => setIsCollapsed(false)}
+                className={` absolute left-0 top-0 h-12 w-12 rounded-xl bg-slate-900/90 border border-slate-700 transition-all duration-300
+          ${showExpandButton ? "opacity-100" : "opacity-0 pointer-events-none"} `} >
                 →
               </button>
-
             )}
 
           </div>
 
           {!isCollapsed && (
 
-            <button
-              onClick={() =>
-                setIsCollapsed(true)
-              }
-              className="
-        h-10
-        w-10
-        rounded-xl
-        bg-slate-900/70
-        border
-        border-slate-700
-        hover:border-cyan-500/30
-        transition-all
-        duration-300
-        "
-            >
+            <button onClick={() => setIsCollapsed(true)}
+              className=" h-10 w-10 rounded-xl bg-slate-900/70 border border-slate-700 hover:border-cyan-500/30 transition-all duration-300 " >
               ←
             </button>
-
           )}
-
         </div>
-
       </div>
-
-      {/* BODY */}
       {/* BODY */}
 
       <div className="flex-1 px-4 space-y-2">
-
         <div className="
-flex items-center gap-4
-group
-w-full
-rounded-2xl
-border
-border-slate-800
-bg-slate-900/40
-hover:bg-slate-800/70
-hover:border-cyan-500/30
-backdrop-blur-sm
-transition-all
-duration-300
-py-3
-px-4
-text-left 
-">
+        flex items-center gap-4 group w-full rounded-2xl 
+        border border-slate-800 bg-slate-900/40 hover:bg-slate-800/70 hover:border-cyan-500/30 
+        backdrop-blur-sm transition-all duration-300 py-3 px-4 text-left ">
           <LayoutDashboard
             size={19}
-            className="
-    text-slate-400
-    group-hover:text-cyan-400
-    group-hover:scale-110
-    transition-all
-    duration-300
-    "
-          />
+            className=" text-slate-400 group-hover:text-cyan-400 group-hover:scale-110 transition-all duration-300 " />
           {!isCollapsed && (
-
-            <span
-              className="
-    text-slate-300
-    group-hover:text-white
-    transition-colors
-    duration-300
-    "
-            >
+            <span className=" text-slate-300 group-hover:text-white transition-colors duration-300 " >
               Dashboard
             </span>
-
           )}
         </div>
 
-        <div className="
-flex items-center gap-4
-group
-w-full
-rounded-2xl
-border
-border-slate-800 
-bg-slate-900/40
-hover:bg-slate-800/70
-hover:border-cyan-500/30
-backdrop-blur-sm
-transition-all
-duration-300
-py-3
-px-4
-text-left
-">
+        <div className=" flex items-center gap-4 group w-full rounded-2xl border
+             border-slate-800 bg-slate-900/40 hover:bg-slate-800/70 hover:border-cyan-500/30 backdrop-blur-sm transition-all duration-300
+             py-3 px-4 text-left ">
           <Bot
             size={19}
-            className="
-  text-slate-400
-  group-hover:text-cyan-400
-  group-hover:scale-110
-  transition-all
-  duration-300
-  "
-          />
+            className=" text-slate-400 group-hover:text-cyan-400 group-hover:scale-110 transition-all duration-300 " />
           {!isCollapsed && (
-
-            <span
-              className="
-    text-slate-300
-    group-hover:text-white
-    transition-colors
-    duration-300
-    "
-            >
+            <span className=" text-slate-300 group-hover:text-white transition-colors duration-300 " >
               New Analysis
             </span>
-
           )}
         </div>
 
-        <div className="
-flex items-center gap-4
-group
-w-full
-rounded-2xl
-border
-border-slate-800
-bg-slate-900/40
-hover:bg-slate-800/70
-hover:border-cyan-500/30
-backdrop-blur-sm
-transition-all
-duration-300
-py-3
-px-4
-text-left
-">
-          <UserCircle
-            size={19}
-            className="
-  text-slate-400
-  group-hover:text-cyan-400
-  group-hover:scale-110
-  transition-all
-  duration-300
-  "
-          />
+        <div className=" flex items-center gap-4 group w-full
+             rounded-2xl border border-slate-800 bg-slate-900/40 hover:bg-slate-800/70
+             hover:border-cyan-500/30 backdrop-blur-sm transition-all duration-300 py-3 px-4 text-left ">
+          <UserCircle size={19}
+            className=" text-slate-400 group-hover:text-cyan-400 group-hover:scale-110 transition-all duration-300 " />
           {!isCollapsed && (
-
-            <span
-              className="
-    text-slate-300
-    group-hover:text-white
-    transition-colors
-    duration-300
-    "
-            >
+            <span className=" text-slate-300 group-hover:text-white transition-colors duration-300 " >
               Profile
             </span>
-
           )}
         </div>
 

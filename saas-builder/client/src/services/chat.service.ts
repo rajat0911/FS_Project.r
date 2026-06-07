@@ -26,7 +26,7 @@ export async function sendMessage( message: string ) {
 
   const sessionId = getSessionId();
 
-  const response = await fetch( "/chat", {
+  const response = await fetch( "/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json", },
         body: JSON.stringify({ message, sessionId, }),
@@ -41,7 +41,7 @@ export async function startConversation() {
 
   const sessionId = getSessionId();
 
-  const response = await fetch( "/chat", {
+  const response = await fetch( "/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json", },
         body: JSON.stringify({ message: "", sessionId, }),
@@ -55,7 +55,7 @@ export async function startConversation() {
 export async function resetChat() {
   const sessionId = getSessionId();
 
-  await fetch( "/chat/reset", {
+  await fetch( "/api/chat/reset", {
       method: "POST",
       headers: { "Content-Type": "application/json", },
       body: JSON.stringify({ sessionId, }),

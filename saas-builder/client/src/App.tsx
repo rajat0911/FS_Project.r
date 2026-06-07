@@ -1,13 +1,6 @@
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState, } from "react";
 
-import {
-  Routes,
-  Route,
-  Navigate,
-} from "react-router-dom";
+import { Routes, Route, Navigate, } from "react-router-dom";
 
 import ChatPage from "./pages/ChatPage";
 
@@ -17,121 +10,51 @@ import DashboardPage from "./pages/DashboardPage";
 
 import ProfilePage from "./pages/ProfilePage";
 
-import {
-  getCurrentUser,
-} from "./services/auth.service";
+import { getCurrentUser, } from "./services/auth.service";
 
-import {
-  supabase,
-} from "./lib/supabase";
+import { supabase, } from "./lib/supabase";
 
 function App() {
 
-  const [loading, setLoading] =
-    useState(true);
+  const [loading, setLoading] = useState(true);
 
-  const [user, setUser] =
-    useState<any>(null);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
 
-    async function loadUser() {
-
-      const currentUser =
-        await getCurrentUser();
-
-      setUser(
-        currentUser
-      );
-
-      setLoading(false);
-    }
-
+    async function loadUser() 
+    { const currentUser = await getCurrentUser(); setUser( currentUser ); setLoading(false); }
     loadUser();
 
-    const {
-      data: authListener,
-    } =
-      supabase.auth.onAuthStateChange(
-
-        async (
-          _event,
-          session
-        ) => {
-
-          setUser(
-            session?.user ?? null
-          );
-
+    const { data: authListener, } = supabase.auth.onAuthStateChange(
+        async ( _event, session ) => {
+          setUser( session?.user ?? null );
           setLoading(false);
         }
       );
 
     return () => {
-
-      authListener
-        .subscription
-        .unsubscribe();
-    };
-
+      authListener .subscription .unsubscribe(); };
   }, []);
 
   if (loading) {
 
     return (
-
-      <div
-        className="
-        min-h-screen
-        flex
-        items-center
-        justify-center
-        text-white
-        "
-      >
-        Loading...
-      </div>
-
+      <div className=" min-h-screen flex items-center justify-center text-white " > Loading... </div>
     );
   }
 
-  if (!user) {
-
-    return <AuthPage />;
-  }
+  if (!user) { return <AuthPage />; }
 
   return (
-
     <Routes>
 
-      <Route
-        path="/"
-        element={
-          <DashboardPage />
-        }
-      />
+      <Route path="/" element={ <DashboardPage /> } />
+      <Route path="/chat" element={ <ChatPage /> } />
 
-      <Route
-        path="/chat"
-        element={
-          <ChatPage />
-        }
-      />
+      <Route path="/profile" element={ <ProfilePage /> } />
 
-      <Route
-        path="/profile"
-        element={
-          <ProfilePage />
-        }
-      />
-
-      <Route
-        path="*"
-        element={
-          <Navigate to="/" />
-        }
-      />
-
+      <Route path="*" element={ <Navigate to="/" /> } />
     </Routes>
   );
 }

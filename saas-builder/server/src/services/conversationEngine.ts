@@ -17,9 +17,7 @@ function getNextValidIndex( startIndex: number, answers: Record<string, any> ) {
     {
     const step = conversationFlow[index];
 
-    if ( !step.condition || step.condition(answers) ) {
-      return index;
-    }
+    if ( !step.condition || step.condition(answers) ) { return index; }
     index++;
   }
   return index;

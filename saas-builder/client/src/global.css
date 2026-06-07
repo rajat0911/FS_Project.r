@@ -36,3 +36,19 @@ body,
 .animate-fade-in {
   animation: fade-in 0.5s ease;
 }
+textarea::-webkit-scrollbar {
+  width: 5px;
+}
+
+textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.12);
+  border-radius: 999px;
+}
+
+textarea::-webkit-scrollbar-thumb:hover {
+  background: rgba(34,211,238,0.5);
+}

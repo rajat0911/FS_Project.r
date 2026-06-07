@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { sendMessage } from "../services/chat.service";
 import type { Message, ConversationStep, } from "../../../shared/types/message";
 import { saveMessage } from "../services/message.service";
@@ -21,6 +21,19 @@ type Props = {
 function ChatInput({ setMessages, isLoading, setIsLoading, setIsGeneratingReport, chatId, currentStep, }: Props) {
 
   const [input, setInput] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  useEffect(() => {
+
+    const textarea = textareaRef.current;
+
+    if (!textarea) return;
+
+    textarea.style.height = "auto";
+
+    textarea.style.height =
+      `${Math.min(textarea.scrollHeight, 180)}px`;
+
+  }, [input]);
 
   const [selectedOptions, setSelectedOptions,] = useState<string[]>([]);
 
@@ -167,14 +180,21 @@ function ChatInput({ setMessages, isLoading, setIsLoading, setIsGeneratingReport
         )}
 
         <div className="flex gap-3">
-          <div className=" flex items-center bg-slate-900/80 border border-slate-700 rounded-3xl px-5 py-3 backdrop-blur-sm " >
+          <div className=" flex items-center w-full bg-slate-900/80 border border-slate-700 rounded-3xl px-5 py-3 backdrop-blur-sm " >
 
-            <input type="text" value={input} onChange={(e) => setInput(e.target.value) }
+            <textarea
+              ref={textareaRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              rows={1}
+              autoFocus
               onKeyDown={(e) => {
                 if (
                   e.key === "Enter" &&
+                  !e.shiftKey &&
                   !isLoading
                 ) {
+                  e.preventDefault();
                   handleSendMessage();
                 }
               }}
@@ -186,13 +206,25 @@ function ChatInput({ setMessages, isLoading, setIsLoading, setIsGeneratingReport
                     : "Type your response..."
                 )
               }
-              autoFocus
-              className=" flex-1 bg-transparent outline-none text-white placeholder:text-slate-500 px-2 " />
+              className="
+  flex-1
+  resize-none
+  min-h-[28px]
+  bg-transparent
+  outline-none
+  text-white
+  placeholder:text-slate-500
+  px-2
+  max-h-[220px]
+  overflow-y-auto
+  leading-6
+"
+            />
 
             <button
-              disabled={ ( !input.trim() && selectedOptions.length === 0 ) || isLoading }
-              onClick={() => handleSendMessage() }
-              className=" h-10 w-10 rounded-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center " >
+              disabled={(!input.trim() && selectedOptions.length === 0) || isLoading}
+              onClick={() => handleSendMessage()}
+              className=" h-11 w-11 rounded-full bg-cyan-500 hover:bg-cyan-400 text-black font-bold transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center " >
               {isLoading ? "..." : "➜"}
             </button>
           </div>

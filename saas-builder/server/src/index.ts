@@ -17,9 +17,9 @@ app.use(express.json());
 
 app.get("/", (req, res) => { res.send("Backend is running..."); });
 
-app.use("/chat", chatRoutes);
-app.use("/session", sessionRoutes);
-app.use("/message", messageRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/session", sessionRoutes);
+app.use("/api/message", messageRoutes);
 
 const PORT = 3000;
 
