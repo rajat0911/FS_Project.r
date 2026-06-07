@@ -14,6 +14,8 @@ import { getCurrentUser, } from "./services/auth.service";
 
 import { supabase, } from "./lib/supabase";
 
+import ContactPage from "./pages/ContactPage";
+
 function App() {
 
   const [loading, setLoading] = useState(true);
@@ -54,7 +56,11 @@ function App() {
 
       <Route path="/profile" element={ <ProfilePage /> } />
 
+      <Route path="/contact" element={<ContactPage />} />
+
+      
       <Route path="*" element={ <Navigate to="/" /> } />
+
     </Routes>
   );
 }

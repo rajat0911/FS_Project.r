@@ -105,7 +105,7 @@ function AuthPage() {
                     <form onSubmit={handleSubmit} className="space-y-4" >
 
                         <button type="button" onClick={signInWithGoogle}
-                            className=" w-full flex items-center justify-center gap-3 bg-white text-black py-4 rounded-xl font-medium hover:bg-slate-100 transition " >
+                            className=" w-full flex items-center justify-center gap-3 bg-white text-black py-4 rounded-xl font-medium hover:bg-slate-100 transition cursor-pointer" >
 
                             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"
                                 className="h-5 w-5" />
@@ -136,7 +136,7 @@ function AuthPage() {
                         )}
 
                         <button type="submit"
-                            className=" w-full bg-cyan-500 hover:bg-cyan-400 transition py-4 rounded-xl font-semibold text-black " >
+                            className=" w-full bg-cyan-500 hover:bg-cyan-400 transition py-4 rounded-xl font-semibold text-black cursor-pointer" >
                             {isLogin ? "Login" : "Create Account"}
                         </button>
 
@@ -145,7 +145,7 @@ function AuthPage() {
                         <button
                             type="button"
                             onClick={() => setIsLogin(!isLogin)}
-                            className=" text-cyan-400 hover:text-cyan-300 transition " >
+                            className=" text-cyan-400 hover:text-cyan-300 transition cursor-pointer" >
                             {isLogin ? "Don't have an account? Sign Up" : "Already have an account? Login"}
                         </button>
                     </div>

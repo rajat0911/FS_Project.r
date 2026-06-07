@@ -49,7 +49,7 @@ function DashboardPage() {
                     </p>
 
                     <button onClick={() => navigate("/chat") } 
-                    className=" bg-cyan-500 hover:bg-cyan-400 text-black px-10 py-4 rounded-2xl font-semibold text-lg transition " >
+                    className=" bg-cyan-500 hover:bg-cyan-400 text-black px-10 py-4 rounded-2xl font-semibold text-lg transition cursor-pointer" >
                         Start New Startup Analysis
                     </button>
 

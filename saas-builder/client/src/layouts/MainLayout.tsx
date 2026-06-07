@@ -6,6 +6,8 @@ import ChatInput from "../components/ChatInput";
 
 import type { Message, } from "../../../shared/types/message";
 
+import { useNavigate } from "react-router-dom";
+
 type Props = {
   messages: Message[];
 
@@ -32,6 +34,8 @@ function MainLayout({
   setIsGeneratingReport,
 }: Props) {
 
+const navigate = useNavigate();
+
   return (
 
     <div className="h-screen text-white flex">
@@ -50,19 +54,15 @@ function MainLayout({
         <div className=" px-6 py-4 flex items-start justify-between " >
           <div>
 
-            <h2 className=" text-lg font-semibold " >
-              SparkAI 
-            </h2>
+            <h2 className=" text-lg font-semibold " > SparkAI </h2>
 
           </div>
 
           <div className=" flex items-center gap-6 text-sm text-slate-400 " >
 
-            <button onClick={() => window.location.href = "/" } className=" hover:text-white transition " >
-              Home
-            </button>
+            <button onClick={() => navigate("/")} className=" hover:text-white transition cursor-pointer " > Home </button>
 
-            <button className=" hover:text-white transition " > Contact </button>
+            <button onClick={() => navigate("/contact")} className="hover:text-white transition cursor-pointer" > Contact </button>
           </div>
 
         </div>

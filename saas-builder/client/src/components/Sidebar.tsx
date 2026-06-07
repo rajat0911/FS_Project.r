@@ -54,7 +54,7 @@ function Sidebar() {
 
               <button onClick={() => setIsCollapsed(false)}
                 className={` absolute left-0 top-0 h-12 w-12 rounded-xl bg-slate-900/90 border border-slate-700 transition-all duration-300
-          ${showExpandButton ? "opacity-100" : "opacity-0 pointer-events-none"} `} >
+          ${showExpandButton ? "opacity-100" : "opacity-0 pointer-events-none"} cursor-pointer`} >
                 →
               </button>
             )}
@@ -64,7 +64,7 @@ function Sidebar() {
           {!isCollapsed && (
 
             <button onClick={() => setIsCollapsed(true)}
-              className=" h-10 w-10 rounded-xl bg-slate-900/70 border border-slate-700 hover:border-cyan-500/30 transition-all duration-300 " >
+              className=" h-10 w-10 rounded-xl bg-slate-900/70 border border-slate-700 hover:border-cyan-500/30 transition-all duration-300 cursor-pointer" >
               ←
             </button>
           )}
@@ -73,10 +73,12 @@ function Sidebar() {
       {/* BODY */}
 
       <div className="flex-1 px-4 space-y-2">
-        <div className="
+        <div 
+        onClick={() => navigate("/")}
+        className="
         flex items-center gap-4 group w-full rounded-2xl 
         border border-slate-800 bg-slate-900/40 hover:bg-slate-800/70 hover:border-cyan-500/30 
-        backdrop-blur-sm transition-all duration-300 py-3 px-4 text-left ">
+        backdrop-blur-sm transition-all duration-300 py-3 px-4 text-left cursor-pointer " >
           <LayoutDashboard
             size={19}
             className=" text-slate-400 group-hover:text-cyan-400 group-hover:scale-110 transition-all duration-300 " />
@@ -87,9 +89,11 @@ function Sidebar() {
           )}
         </div>
 
-        <div className=" flex items-center gap-4 group w-full rounded-2xl border
+        <div 
+        onClick={() => navigate("/new-analysis")}
+        className=" flex items-center gap-4 group w-full rounded-2xl border
              border-slate-800 bg-slate-900/40 hover:bg-slate-800/70 hover:border-cyan-500/30 backdrop-blur-sm transition-all duration-300
-             py-3 px-4 text-left ">
+             py-3 px-4 text-left cursor-pointer " >
           <Bot
             size={19}
             className=" text-slate-400 group-hover:text-cyan-400 group-hover:scale-110 transition-all duration-300 " />
@@ -100,9 +104,11 @@ function Sidebar() {
           )}
         </div>
 
-        <div className=" flex items-center gap-4 group w-full
+        <div 
+        onClick={() => navigate("/profile")}
+        className=" flex items-center gap-4 group w-full
              rounded-2xl border border-slate-800 bg-slate-900/40 hover:bg-slate-800/70
-             hover:border-cyan-500/30 backdrop-blur-sm transition-all duration-300 py-3 px-4 text-left ">
+             hover:border-cyan-500/30 backdrop-blur-sm transition-all duration-300 py-3 px-4 text-left cursor-pointer " >
           <UserCircle size={19}
             className=" text-slate-400 group-hover:text-cyan-400 group-hover:scale-110 transition-all duration-300 " />
           {!isCollapsed && (
@@ -116,7 +122,7 @@ function Sidebar() {
 
       {/* FOOTER */}
 
-      <div className="p-4 " >
+      <div className="p-4 cursor-pointer" onClick={() => navigate("/profile")}>
 
         <div className=" flex items-center gap-3 mb-3 " >
 
@@ -128,7 +134,9 @@ function Sidebar() {
 
           {!isCollapsed && (
 
-            <div className=" overflow-hidden " >
+            <div className=" overflow-hidden" 
+            
+            >
 
               <p className=" text-sm text-white truncate " >
                 {userEmail}
@@ -145,7 +153,7 @@ function Sidebar() {
         </div>
 
         <button onClick={handleLogout}
-          className=" w-full rounded-xl bg-slate-900 hover:bg-red-500/20 border border-slate-800 hover:border-red-500/30 transition py-2 text-sm text-slate-300 " >
+          className=" w-full rounded-xl bg-slate-900 hover:bg-red-500/20 border border-slate-800 hover:border-red-500/30 transition py-2 text-sm text-slate-300 cursor-pointer" >
           {isCollapsed ? "↩" : "↩ Logout"}
         </button>
       </div>
