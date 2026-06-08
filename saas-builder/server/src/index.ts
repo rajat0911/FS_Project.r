@@ -1,14 +1,12 @@
 import dotenv from "dotenv";
 dotenv.config();
-import sessionRoutes
-from "./routes/session.routes";
+import sessionRoutes from "./routes/session.routes";
 import { supabase } from "./config/supabase";
 import express from "express";
 import cors from "cors";
-import messageRoutes
-from "./routes/message.routes";
-
+import messageRoutes from "./routes/message.routes";
 import chatRoutes from "./routes/chat.routes";
+import contactRoutes from "./routes/contact.routes";
 
 const app = express();
 
@@ -20,6 +18,7 @@ app.get("/", (req, res) => { res.send("Backend is running..."); });
 app.use("/api/chat", chatRoutes);
 app.use("/api/session", sessionRoutes);
 app.use("/api/message", messageRoutes);
+app.use("/api/contact", contactRoutes);
 
 const PORT = 3000;
 

@@ -86,7 +86,6 @@ function ProfilePage() {
 
             <div className="space-y-6">
               <div>
-
                 <p className="text-slate-400"> Startup Analyses </p>
                 <p className="text-3xl font-bold mt-1"> 0 </p>
               </div>

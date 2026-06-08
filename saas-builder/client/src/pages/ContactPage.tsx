@@ -7,19 +7,53 @@ function ContactPage() {
 
     const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "", });
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const [successMessage, setSuccessMessage] = useState("");
+
+    const [errorMessage, setErrorMessage] = useState("");
+
     function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
         setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value, }));
     }
-
-    function handleSubmit(e: React.FormEvent) {
+    async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
 
-        console.log("Contact Form:", formData);
-        alert("Contact form submitted. Backend integration coming next.");
+        try {
+            setIsSubmitting(true);
+            setSuccessMessage("");
+            setErrorMessage("");
 
-        setFormData({ name: "", email: "", subject: "", message: "", });
+            const response = await fetch("/api/contact",
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json", },
+                    body: JSON.stringify(formData),
+                }
+            );
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Failed to submit form.");
+            }
+
+            setSuccessMessage("Message sent successfully. Please check your email.");
+            setFormData({
+                name: "",
+                email: "",
+                subject: "",
+                message: "",
+            });
+        }
+
+        catch (error: any) {
+            setErrorMessage(error.message || "Something went wrong.");
+        }
+
+        finally {
+            setIsSubmitting(false);
+        }
     }
-
     return (
         <div className="min-h-screen px-6 py-12">
 
@@ -51,6 +85,20 @@ function ContactPage() {
 
                         <form onSubmit={handleSubmit} className="space-y-5" >
 
+                            {successMessage && (
+
+                                <div className=" bg-green-500/10 border border-green-500/20 text-green-400 px-4 py-3 rounded-2xl " >
+                                    {successMessage}
+                                </div>
+                            )}
+
+                            {errorMessage && (
+
+                                <div className=" bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-2xl " >
+                                    {errorMessage}
+                                </div>
+                            )}
+
                             <input type="text"
                                 name="name" placeholder="Your Name" value={formData.name}
                                 onChange={handleChange}
@@ -67,12 +115,10 @@ function ContactPage() {
                             <textarea name="message" placeholder="Tell us how we can help..."
                                 value={formData.message} onChange={handleChange} rows={6}
                                 className=" w-full bg-slate-800 border border-slate-700 rounded-2xl px-4 py-3 outline-none resize-none " required />
-
-                            <button type="submit"
-                                className=" bg-cyan-500 hover:bg-cyan-400 text-black font-semibold px-8 py-3 rounded-2xl transition cursor-pointer " >
-                                Send Message
+                            <button type="submit" disabled={isSubmitting}
+                                className=" bg-cyan-500 hover:bg-cyan-400 text-black font-semibold px-8 py-3 rounded-2xl transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed " >
+                                {isSubmitting ? "Sending..." : "Send Message"}
                             </button>
-
                         </form>
 
                     </div>
