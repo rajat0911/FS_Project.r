@@ -1,26 +1,17 @@
 import { Router } from "express";
 
-import {
-  saveFounderSession,
-}
-  from "../services/founderSessionService";
+import { saveFounderSession, } from "../services/founderSessionService";
 
 import { getCurrentStep, saveAnswer, getNextStep, } from "../services/conversationEngine";
 
-import {
-  clearSession,
-} from "../services/sessionManager";
+import { clearSession, } from "../services/sessionManager";
 
-import { GoogleGenAI }
-  from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 
 
-import EVALUATION_PROMPT
-  from "../prompts/evaluationPrompt";
+import EVALUATION_PROMPT from "../prompts/evaluationPrompt";
 
-import {
-  generateConversationalQuestion,
-} from "../services/aiConversationEngine";
+import { generateConversationalQuestion, } from "../services/aiConversationEngine";
 
 const router = Router();
 
@@ -28,105 +19,80 @@ const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY!, });
 
 /* CHAT ROUTE */
 
-router.post(
-  "/",
-  async (req, res) => {
+router.post("/", async (req, res) => {
 
-    try {
-      const { message, sessionId, } = req.body;
+  try {
+    const { message, sessionId, } = req.body;
 
-      if (!sessionId) {
-        return res.status(400).json({
-          reply:
-            "Missing sessionId",
-        });
-      }
+    if (!sessionId) {
+      return res.status(400).json({ reply: "Missing sessionId", });
+    }
 
-      /* FIRST MESSAGE */
+    /* FIRST MESSAGE */
 
-      if (!message || message.trim() === "") {
+    if (!message || message.trim() === "") {
+      const firstStep = getCurrentStep(sessionId);
+      return res.json({ reply: firstStep.goal, step: firstStep, });
+    }
 
-        const firstStep = getCurrentStep(sessionId);
+    /* SAVE ANSWER */
 
-        return res.json({
-          reply: firstStep.goal, step: firstStep,
-        });
-      }
+    const result = saveAnswer(sessionId, message);
 
-      /* SAVE ANSWER */
+    if (!result) {
+      return res.status(500).json({ reply: "Failed to save answer.", });
+    }
 
-      const result = saveAnswer(sessionId, message);
+    /* FLOW COMPLETED */
+    console.log("CONVERSATION COMPLETE");
+    console.log(result.answers);
+    /* FLOW COMPLETED */
 
-      if (!result) {
-        return res.status(500).json({
-          reply:
-            "Failed to save answer.",
-        });
-      }
+    if (result.completed) {
+      console.log("GENERATING AI EVALUATION...");
 
-      /* FLOW COMPLETED */
-      console.log("CONVERSATION COMPLETE");
-      console.log(result.answers);
-      /* FLOW COMPLETED */
+      await saveFounderSession(sessionId, result.answers, null);
 
-      if (result.completed) {
-        console.log("GENERATING AI EVALUATION...");
-        await saveFounderSession(
-          sessionId,
-          result.answers,
-          null
-        );
-        const response = await ai.models.generateContent({
-          model: "gemini-2.5-flash", contents: `
-
+      await new Promise(resolve => setTimeout(resolve, 8000) );
+    
+      const response = await ai.models.generateContent({
+        model: "gemini-2.5-flash", contents: `
       ${EVALUATION_PROMPT} Analyze this startup deeply. FOUNDER SESSION DATA:
-      ${JSON.stringify(result.answers, null, 2)} `,
-        });
+      ${JSON.stringify(result.answers, null, 2)} `, });
 
-        const rawText = response.text || "{}";
+      const rawText = response.text || "{}";
 
-        const cleanedText = rawText.replace(/```json/g, "").replace(/```/g, "").trim();
+      const cleanedText = rawText.replace(/```json/g, "").replace(/```/g, "").trim();
 
-        let parsedData;
-        try {
-          parsedData = JSON.parse(cleanedText);
-
-          console.log("SAVE FOUNDER SESSION CALLED");
-
-          // await saveFounderSession(sessionId, result.answers, parsedData);
-        }
-
-        catch (parseError) {
-          console.log(parseError);
-          return res.status(500).json({
-            reply:
-              "Failed to parse AI JSON.",
-          });
-        }
-        clearSession(sessionId);
-        return res.json({ reply: parsedData, });
+      let parsedData;
+      try {
+        parsedData = JSON.parse(cleanedText);
+        console.log("SAVE FOUNDER SESSION CALLED");
       }
 
-      /* NEXT QUESTION */
-
-      const nextStep = getNextStep(sessionId);
-
-      const aiQuestion =
-        await generateConversationalQuestion(nextStep, result.answers, message);
-
-      return res.json({ reply: aiQuestion, step: nextStep, });
+      catch (parseError) {
+        console.log(parseError);
+        
+        return res.status(500).json({ reply: "Failed to parse AI JSON.", });
+      }
+      clearSession(sessionId);
+      return res.json({ reply: parsedData, });
     }
 
-    catch (error) {
+    /* NEXT QUESTION */
 
-      console.log(error);
-      return res.status(500).json({
-        reply:
-          "Failed to process conversation.",
-      });
-    }
+    const nextStep = getNextStep(sessionId);
+    const aiQuestion = await generateConversationalQuestion(nextStep, result.answers, message);
+
+    return res.json({ reply: aiQuestion, step: nextStep, });
   }
-);
+
+  catch (error) {
+    console.log(error);
+    
+    return res.status(500).json({ reply: "Failed to process conversation.", });
+  }
+} );
 
 /* RESET ROUTE */
 

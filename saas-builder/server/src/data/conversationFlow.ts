@@ -1,42 +1,27 @@
 export type ConversationStep = {
   id: string;
-
   phase: number;
-
   field: string;
-
   goal: string;
 
-  inputType:
-    | "text"
-    | "single_select"
-    | "multi_select";
-
+  inputType: | "text" | "single_select" | "multi_select";
   options?: string[];
-
   required?: boolean;
 
-  condition?: (
-    answers: Record<string, any>
-  ) => boolean;
-
+  condition?: ( answers: Record<string, any> ) => boolean;
   placeholder?: string;
 };
 
-/* ------------------------------------------------ */
-
 export const conversationFlow: ConversationStep[] = [
 
-  /* ================================================= */
   /* PHASE 1 — IDEA DISCOVERY */
-  /* ================================================= */
 
   {
     id: "idea_raw_description",
     phase: 1,
     field: "idea_raw_description",
     goal:
-      "Hey there 👋 I'm Spark, your idea co-pilot. I've helped hundreds of founders stress-test, shape, and launch their ideas. Tell me, what's been living rent-free in your head lately? An idea, a problem you want to solve, or something you've already started?",
+      "  Hi, I'm Spark What startup idea are you exploring?",
     inputType: "text",
     required: true,
   },
@@ -50,9 +35,7 @@ export const conversationFlow: ConversationStep[] = [
     inputType: "text",
   },
 
-  /* ================================================= */
   /* PHASE 2 — IDEA DISCOVERY */
-  /* ================================================= */
 
   {
     id: "idea_type",
@@ -104,9 +87,7 @@ export const conversationFlow: ConversationStep[] = [
     placeholder:"India...",
   },
 
-  /* ================================================= */
   /* PHASE 3 — BUSINESS CONTEXT */
-  /* ================================================= */
 
   {
     id: "existing_businesses_count",
@@ -153,9 +134,8 @@ export const conversationFlow: ConversationStep[] = [
     ],
   },
 
-  /* ================================================= */
+
   /* PHASE 4 — MARKET & MODEL */
-  /* ================================================= */
 
   {
     id: "revenue_model",
@@ -245,9 +225,7 @@ export const conversationFlow: ConversationStep[] = [
     ],
   },
 
-  /* ================================================= */
   /* PHASE 5 — CONTACT CAPTURE */
-  /* ================================================= */
 
   {
     id: "founder_name",

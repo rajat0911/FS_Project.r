@@ -1,14 +1,43 @@
 @import "tailwindcss";
 
+:root {
+  font-family: Inter, sans-serif;
+}
+
+:root {
+  --bg-primary: #020617;
+  --bg-card: #0f172a;
+  --border-color: #1e293b;
+  --text-primary: #ffffff;
+  --text-secondary: #94a3b8;
+}
+
+.light {
+  --bg-primary: #f8fafc;
+  --bg-card: #ffffff;
+  --border-color: #cbd5e1;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+}
+
 body {
   margin: 0;
   padding: 0;
   font-family: Inter, sans-serif;
-  background: #0f172a;
-  color: white;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
 }
 
+html,
+body,
+#root {
+  min-height: 100vh;
+}
+
+
 @keyframes fade-in {
+
   from {
     opacity: 0;
     transform: translateY(10px);
@@ -22,4 +51,20 @@ body {
 
 .animate-fade-in {
   animation: fade-in 0.5s ease;
+}
+textarea::-webkit-scrollbar {
+  width: 5px;
+}
+
+textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.12);
+  border-radius: 999px;
+}
+
+textarea::-webkit-scrollbar-thumb:hover {
+  background: rgba(34,211,238,0.5);
 }

@@ -1,20 +1,12 @@
-import type {
-  EvaluationReport,
-} from "../../../shared/types/evaluation";
+import type { EvaluationReport, } from "../../../shared/types/evaluation";
 
-import MetricCard
-  from "./MetricCard";
+import MetricCard from "./MetricCard";
 
-type Props = {
-  report: EvaluationReport;
-};
+type Props = { report: EvaluationReport; };
 
-function EvaluationDashboard({
-  report,
-}: Props) {
+function EvaluationDashboard({ report, }: Props) {
 
   return (
-
     <div id="saas-report-dashboard" className="space-y-8 max-w-7xl mx-auto bg-slate-950 min-h-screen p-6">
 
       {/* HERO */}
