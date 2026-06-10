@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { signIn, signUp, signInWithGoogle, } from "../services/auth.service";
+import { signIn, signUp, signInWithGoogle, signInWithLinkedIn, } from "../services/auth.service";
 
 function AuthPage() {
 
@@ -104,20 +104,77 @@ function AuthPage() {
 
                     <form onSubmit={handleSubmit} className="space-y-4" >
 
-                        <button type="button" onClick={signInWithGoogle}
-                            className=" w-full flex items-center justify-center gap-3 bg-white text-black py-4 rounded-xl font-medium hover:bg-slate-100 transition cursor-pointer" >
+                        <div className="grid grid-cols-2 gap-3">
 
-                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"
-                                className="h-5 w-5" />
-                            Continue with Google
-                        </button>
+                            <button
+                                type="button"
+                                onClick={signInWithGoogle}
+                                className="
+    flex
+    items-center
+    justify-center
+    gap-3
+    bg-white
+    text-black
+    py-4
+    rounded-xl
+    font-medium
+    hover:bg-slate-100
+    transition
+    cursor-pointer
+    "
+                            >
+
+                                <img
+                                    src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg"
+                                    alt="Google"
+                                    className="h-5 w-5"
+                                />
+
+                                Google
+
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={signInWithLinkedIn}
+                                className="
+    flex
+    items-center
+    justify-center
+    gap-3
+    bg-[#0077B5]
+    text-white
+    py-4
+    rounded-xl
+    font-medium
+    hover:opacity-90
+    transition
+    cursor-pointer
+    "
+                            >
+
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                    className="h-5 w-5"
+                                >
+                                    <path d="M20.447 20.452H16.89V14.87c0-1.331-.027-3.045-1.856-3.045-1.858 0-2.143 1.45-2.143 2.949v5.678H9.336V9h3.414v1.561h.049c.476-.9 1.637-1.85 3.37-1.85 3.603 0 4.268 2.372 4.268 5.456v6.285zM5.337 7.433a2.062 2.062 0 11.001-4.124 2.062 2.062 0 01-.001 4.124zM7.119 20.452H3.556V9H7.12v11.452z" />
+                                </svg>
+
+                                LinkedIn
+
+                            </button>
+
+                        </div>
 
                         <div className="flex items-center gap-4 my-4">
 
                             <div className="h-px bg-slate-700 flex-1" />
 
                             <span className="text-slate-500 text-sm">
-                                OR
+                                Continue with Email
                             </span>
                             <div className="h-px bg-slate-700 flex-1" />
                         </div>

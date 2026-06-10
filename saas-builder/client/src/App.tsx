@@ -16,6 +16,8 @@ import { supabase, } from "./lib/supabase";
 
 import ContactPage from "./pages/ContactPage";
 
+import ReportPreviewPage from "./pages/ReportPreviewPage";
+
 function App() {
 
   const [loading, setLoading] = useState(true);
@@ -58,11 +60,11 @@ function App() {
 
       <Route path="/contact" element={<ContactPage />} />
 
-      
+      <Route path="/report" element={<ReportPreviewPage />} />
+
       <Route path="*" element={ <Navigate to="/" /> } />
 
     </Routes>
   );
 }
-
 export default App;

@@ -36,3 +36,21 @@ export async function signInWithGoogle() {
     });
   if (error) { throw error; }
 }
+
+export async function signInWithLinkedIn() {
+
+  const { error } =
+    await supabase.auth.signInWithOAuth({
+
+      provider: "linkedin_oidc",
+
+      options: {
+        redirectTo: window.location.origin,
+      },
+
+    });
+
+  if (error) {
+    throw error;
+  }
+}
