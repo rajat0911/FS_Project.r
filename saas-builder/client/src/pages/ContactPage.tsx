@@ -46,13 +46,8 @@ function ContactPage() {
             });
         }
 
-        catch (error: any) {
-            setErrorMessage(error.message || "Something went wrong.");
-        }
-
-        finally {
-            setIsSubmitting(false);
-        }
+        catch (error: any) { setErrorMessage(error.message || "Something went wrong."); }
+        finally { setIsSubmitting(false); }
     }
     return (
         <div className="min-h-screen px-6 py-12">
@@ -142,7 +137,7 @@ function ContactPage() {
 
                             <div>
                                 <p className="text-slate-400 mb-1"> Response Time </p>
-                                <p> Within 24–48 hours </p>
+                                <p> Within 24-48 hours </p>
                             </div>
 
                             <div>
